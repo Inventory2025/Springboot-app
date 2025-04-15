@@ -89,7 +89,7 @@ public class BranchMasterServiceImpl implements BranchMasterService {
 
     @Override
     public BranchResponse BranchDelete(RemoveRequest removeRequest) throws Exception {
-        log.info("RoleMasterService::roleDelete:: delete role request :{}", removeRequest);
+        log.info("BranchMasterService::BranchDelete:: delete Branch request :{}", removeRequest);
         try {
             BranchMaster branchMasterObj = loadBranchByName(removeRequest.getId());
             branchRepository.delete(branchMasterObj);
@@ -105,7 +105,7 @@ public class BranchMasterServiceImpl implements BranchMasterService {
     }
 
     private BranchMaster loadBranchByName(String name) throws ImsBusinessException {
-        log.info("RoleMasterService::loadRoleByName:Load role called.");
+        log.info("BranchMasterService::loadBranchByName:Load branch called.");
         Optional<BranchMaster> branchMasterObj = branchRepository.findByName(name);
         if (branchMasterObj.isPresent() && ObjectUtils.isNotEmpty(branchMasterObj.get())) {
             log.info("BranchMasterService::loadBranchByName:Branch found.");

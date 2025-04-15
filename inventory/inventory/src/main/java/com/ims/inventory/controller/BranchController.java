@@ -43,7 +43,7 @@ public class BranchController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("delete")
     public ResponseEntity<?> deleteBranch(
             @Valid @RequestBody RemoveRequest removeRequest) throws Exception {
         try {

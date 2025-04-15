@@ -2,6 +2,11 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" procOnly="true">
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/inventory" />
+        </processorPath>
+      </profile>
       <profile name="Annotation profile for inventory" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
