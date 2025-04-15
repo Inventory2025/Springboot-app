@@ -10,25 +10,16 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "tbl_menu", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
-public class MenuMaster extends AuditBaseEntity {
+@Table(name = "tbl_category", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+public class CategoryMaster extends AuditBaseEntity{
 
     @Column(name = "code", unique = true)
     private String code;
 
-    @Column(name = "label")
-    private String label;
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "description")
     private String description;
-
-    @Column(name = "parent")
-    private String parent;
-
-    @Column(name = "icon")
-    private String icon;
-
-    @Column(name = "menu_order")
-    private Integer menuOrder;
 
 }

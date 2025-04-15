@@ -1,5 +1,6 @@
 package com.ims.inventory.domen.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
@@ -12,10 +13,15 @@ public class AbstractBaseEntity {
 
     @Getter
     @Id
+    @Column(name = "id")
     private final String id;
 
     @Version
+    @Column(name = "version")
     private int version;
+
+    @Column(name = "is_active")
+    private boolean isActive;
 
     public AbstractBaseEntity() {
         this.id = UUID.randomUUID().toString();
