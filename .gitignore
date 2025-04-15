@@ -1,0 +1,17 @@
+# === Java Backend ===
+/inventory/target/
+/inventory/.idea/
+/inventory/.classpath
+/inventory/.project
+*.log
+
+# === Angular Frontend ===
+/ims_web/dist/
+/ims_web/node_modules/
+/ims_web/.angular/
+.angular/cache/
+
+# === OS & Editor Files ===
+.DS_Store
+Thumbs.db
+*.env
