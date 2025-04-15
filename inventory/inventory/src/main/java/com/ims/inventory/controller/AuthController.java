@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/auth")
+    @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {

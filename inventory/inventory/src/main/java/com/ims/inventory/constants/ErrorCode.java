@@ -21,4 +21,9 @@ public final class ErrorCode {
     public static final String LOCATION_EDIT_EXCEPTION_CODE = "LOC1002";
     public static final String LOCATION_ADD_EXCEPTION_CODE = "LOC1003";
     public static final String LOCATION_DELETE_EXCEPTION_CODE = "LOC1003";
+
+    public static final String CATEGORY_NOT_FOUND_CODE = "LOC1001";
+    public static final String CATEGORY_EDIT_EXCEPTION_CODE = "LOC1002";
+    public static final String CATEGORY_ADD_EXCEPTION_CODE = "LOC1003";
+    public static final String CATEGORY_DELETE_EXCEPTION_CODE = "LOC1003";
 }

@@ -5,6 +5,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.aspectj.apache.bcel.ExceptionConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
+@Slf4j
 @Service
 public class JwtUtil {
 
@@ -63,13 +67,27 @@ public class JwtUtil {
     }
 
     public String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                //  .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact(); //SignatureAlgorithm.HS256,
+        return buildToken(claims, subject, expiration); //SignatureAlgorithm.HS256,
     }
 
     public void validateToken(final String token) {
         Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
+    }
+
+    public String refreshToken(String token, String subject, long expTime) {
+        final Claims claims = extractAllClaims(token);
+        return buildToken(claims, subject, expTime);
+    }
+
+    private String buildToken(Map<String, Object> claims, String subject, long expTime) {
+        try {
+            return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                    // .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60))
+                    .setExpiration(new Date(System.currentTimeMillis() + (1000 * expTime)))
+                    .signWith(getSignKey(), SignatureAlgorithm.HS256).compact(); //SignatureAlgorithm.HS256,
+        } catch (Exception e) {
+           log.error("JwtUtil::buildToken::Exception occurred :",e);
+           return StringUtils.EMPTY;
+        }
     }
 }

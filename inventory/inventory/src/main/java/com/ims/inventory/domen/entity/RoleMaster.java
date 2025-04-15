@@ -1,11 +1,10 @@
 package com.ims.inventory.domen.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -19,7 +18,13 @@ public class RoleMaster extends AuditBaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "expiry_time")
+    private Long expiryTime;
+
     @Column(name = "description")
     private String description;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roleMaster", cascade = CascadeType.ALL)
+    private List<UserMaster> userMasterList;
 
 }

@@ -1,9 +1,6 @@
 package com.ims.inventory.domen.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -36,6 +33,10 @@ public class UserMaster extends AuditBaseEntity {
 
     @Column(name = "description")
     private String description;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private RoleMaster roleMaster;
 
   /*  @Enumerated(EnumType.STRING)
     private UserRole role;*/

@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.security.SecuritySchemes;
+import io.swagger.v3.oas.models.OpenAPI;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -26,9 +28,23 @@ import org.springframework.core.env.Environment;
 })
 public class SwaggerConfig {
 
+        // Customize API info (optional)
         @Bean
-        public boolean enableSwagger(Environment environment) {
-                return environment.acceptsProfiles("local");
+        public OpenAPI customOpenAPI() {
+                return new OpenAPI()
+                        .info(new io.swagger.v3.oas.models.info.Info()
+                                .title("Inventory API")
+                                .version("1.0")
+                                .description("Only your custom APIs"));
+        }
+
+        // Grouped OpenAPI to limit package scanning
+        @Bean
+        public GroupedOpenApi myInventoryApi() {
+                return GroupedOpenApi.builder()
+                        .group("inventory") // Just a label
+                        .packagesToScan("com.ims.inventory.controller") // <== change to your controller package
+                        .build();
         }
 
 }

@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "tbl_role", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+@Table(name = "tbl_menu", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 public class MenuMaster extends AuditBaseEntity {
 
     @Column(name = "code", unique = true)
