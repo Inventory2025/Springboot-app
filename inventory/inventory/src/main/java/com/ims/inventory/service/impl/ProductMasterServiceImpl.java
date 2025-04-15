@@ -1,23 +1,24 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.entity.BradMaster;
 import com.ims.inventory.domen.entity.CategoryMaster;
 import com.ims.inventory.domen.entity.ProductMaster;
+import com.ims.inventory.domen.entity.UnitMaster;
 import com.ims.inventory.domen.request.CategoryRequest;
 import com.ims.inventory.domen.request.ProductRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
-import com.ims.inventory.domen.response.ApiResponse;
-import com.ims.inventory.domen.response.CategoryResponse;
-import com.ims.inventory.domen.response.ProductResponse;
-import com.ims.inventory.domen.response.RoleResponse;
+import com.ims.inventory.domen.response.*;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.mappers.RoleRowMapper;
 import com.ims.inventory.repository.RoleRepository;
 import com.ims.inventory.repository.impl.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,7 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
             throw new ImsBusinessException("ProdOO1", "product not found.");
         }
     }
+
     private ProductResponse createResponse(ProductMaster productMaster, String method) throws ImsBusinessException {
         if (ObjectUtils.isNotEmpty(productMaster)) {
             ProductResponse resp = new ProductResponse();
@@ -93,6 +95,27 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
     }
 
     @Override
+    public ProductDetailResponse loadProduct(ProductRequest productRequest) throws Exception {
+        log.info("ProductMasterService::Load product request :{}", productRequest);
+        try {
+            ProductDetailResponse productResp = new ProductDetailResponse();
+            ProductMaster productMaster = loadProductByName(productRequest.getName());
+            productDetailMapper(productResp, productMaster);
+            if (ObjectUtils.isNotEmpty(productResp)) {
+                log.info("ProductService::loadProduct :: Product load successfully.");
+                return productResp;
+            } else {
+                throw new ImsBusinessException(PRODUCT_NOT_FOUND_CODE,
+                        "Product not load successfully.");
+            }
+        } catch (Exception e) {
+            log.error("ProductMasterService::loadProduct::Exception occurred in load Product for name :{}",
+                    productRequest.getName(), e);
+            throw new ImsBusinessException(PRODUCT_LOAD_EXCEPTION_CODE, PRODUCT_LOAD_EXCEPTION_MSG);
+        }
+    }
+
+    @Override
     public ProductResponse ProductDelete(RemoveRequest removeRequest) throws Exception {
         log.info("ProductMasterService::ProductDelete:: delete product request :{}", removeRequest);
         try {
@@ -111,7 +134,7 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
 
     private ProductMaster loadProductByName(String name) throws ImsBusinessException {
         log.info("ProductMasterService::loadProductByName:Load Product called.");
-        Optional<ProductMaster> productMasterObj = productRepository.findByName(name);
+        Optional<ProductMaster> productMasterObj = productRepository.findByCode(name);
         if (productMasterObj.isPresent() && ObjectUtils.isNotEmpty(productMasterObj.get())) {
             log.info("ProductMasterService::loadProductByName:Product found.");
             return productMasterObj.get();
@@ -119,9 +142,54 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
             throw new ImsBusinessException(CATEGORY_NOT_FOUND_CODE, CATEGORY_NOT_FOUND_MSG);
         }
     }
+
     private void productMapper(ProductMaster productMaster, ProductRequest productRequest) {
         log.info("ProductMasterService::productMapper:Product mapper called.");
         productMaster.setName(productRequest.getName());
         productMaster.setDescription(productRequest.getDescription());
+    }
+
+    private void productDetailMapper(ProductDetailResponse productMaster, ProductMaster productRequest) {
+        log.info("ProductMasterService::productDetailMapper:Product mapper called.");
+        productMaster.setCode(productRequest.getCode());
+        productMaster.setName(productRequest.getName());
+        productMaster.setDescription(productRequest.getDescription());
+        productMaster.setCategory(productRequest.getCategory());
+        productMaster.setBrand(productRequest.getBrand());
+        productMaster.setCost(productRequest.getCost());
+        productMaster.setPrice(productRequest.getPrice());
+        productMaster.setProductUnit(productRequest.getProductUnit());
+        productMaster.setSaleUnit(productRequest.getSaleUnit());
+        productMaster.setPurchaseUnit(productRequest.getPurchaseUnit());
+        productMaster.setQuantity(productRequest.getQuantity());
+        productMaster.setStockAlert(productRequest.getStockAlert());
+        productMaster.setDiscount(productRequest.getDiscount());
+        productMaster.setTaxPer(productRequest.getTaxPer());
+        productMaster.setTaxType(productRequest.getTaxType());
+        productMaster.setImageUrl(productRequest.getImageUrl());
+        productMaster.setStatus(productRequest.getStatus());
+        productMaster.setDescription(productRequest.getDescription());
+    }
+
+    @Override
+    public List<AutoCompleteResponse> findAllProductByNameIsActive(String name, Boolean isActive) throws ImsBusinessException {
+        List<ProductMaster> productList = null;
+        if (StringUtils.isEmpty(name)) {
+            productList = productRepository.findTop15ByIsActiveOrderByNameAsc(isActive);
+        } else {
+            productList = productRepository.findByIsActiveAndNameIgnoreCaseContaining(isActive, name);
+        }
+        if (!ObjectUtils.isEmpty(productList)) {
+            return productList.stream().map(obj -> {
+                AutoCompleteResponse resp = new AutoCompleteResponse();
+                resp.setId(obj.getId());
+                resp.setName(obj.getName());
+                resp.setOption(obj.getCode());
+                return resp;
+            }).toList();
+        } else {
+            log.info("ProductMasterServiceImpl::findAllProductByNameIsActive:: search product data not found.");
+            throw new ImsBusinessException("ItemsOO1", "Items not found.");
+        }
     }
 }

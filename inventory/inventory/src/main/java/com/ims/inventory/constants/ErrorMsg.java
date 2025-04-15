@@ -26,4 +26,7 @@ public final class ErrorMsg {
     public static final String CATEGORY_EDIT_EXCEPTION_MSG = "Exception occurred in edit Branch.";
     public static final String CATEGORY_ADD_EXCEPTION_MSG = "Exception occurred in add Branch.";
     public static final String CATEGORY_DELETE_EXCEPTION_MSG = "Exception occurred in delete Branch.";
+
+    public static final String PRODUCT_NOT_FOUND_MSG = "Product not Found.";
+    public static final String PRODUCT_LOAD_EXCEPTION_MSG = "Exception occurred in load product.";
 }

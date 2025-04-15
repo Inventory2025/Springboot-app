@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductRequest {
-    @NotBlank(message = "Category name should not null or empty.")
+
+    @NotBlank(message = "Product name should not null or empty.")
     private String name;
 
     private String description;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/product/")
+@RequestMapping("/api/v1/product/")
 public class ProductController {
 
     @Autowired
@@ -43,6 +43,16 @@ public class ProductController {
         }
     }
 
+    @PostMapping("load")
+    public ResponseEntity<?> loadProduct(
+            @Valid @RequestBody ProductRequest productRequest) throws Exception {
+        try {
+            return ResponseEntity.ok(productMasterservice.loadProduct(productRequest));
+        } catch (BadCredentialsException e) {
+            throw new Exception("ProductController::addProduct:Exception occurred while product edition.", e);
+        }
+    }
+
     @DeleteMapping("delete")
     public ResponseEntity<?> deleteProduct(
             @Valid @RequestBody RemoveRequest removeRequest) throws Exception {
@@ -51,5 +61,12 @@ public class ProductController {
         } catch (BadCredentialsException e) {
             throw new Exception("ProductController::addProduct:Exception occurred while product deletion.", e);
         }
+    }
+
+    @PostMapping("search/items")
+    public ResponseEntity<?> getSearchItems(
+            @RequestBody AutoCompleteRequest autoCompleteRequest) throws Exception {
+        return ResponseEntity.ok(productMasterservice.findAllProductByNameIsActive(
+                autoCompleteRequest.getSearch(), true));
     }
 }
