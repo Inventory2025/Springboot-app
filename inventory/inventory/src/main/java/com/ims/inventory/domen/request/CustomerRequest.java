@@ -11,8 +11,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerRequest {
+
     @NotBlank(message = "Customer name should not null or empty.")
-    private String customer_Name;
+    private String customerName;
+    @NotBlank(message = "Customer Email should not null or empty.")
     private String email;
-    private String phone_Number;
+    @NotBlank(message = "Customer Phone number should not null or empty.")
+    private String phoneNumber;
+    private String addressLine1;
+    private String addressLine2;
+    private String addressLine3;
+    private String city;
+    private String state;
+    private String country;
+    private String pinCode;
+
 }

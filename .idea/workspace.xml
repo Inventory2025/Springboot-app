@@ -4,19 +4,33 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6292c492-dd79-4757-8927-cfeda053fcd0" name="Changes" comment="commit new latest changes in web">
-      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/request/AutoCompleteRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/response/AutoCompleteResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/response/ProductDetailResponse.java" afterDir="false" />
+    <list default="true" id="6292c492-dd79-4757-8927-cfeda053fcd0" name="Changes" comment="commit for product search &amp; load rest">
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/config/AuditorAwareConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/controller/CustomerController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/dto/CustomerImportDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/City.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/Country.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/State.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/exception/ImportError.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/CityRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/CountryRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/StateRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/AuditorAwareImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/CustomerServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ims-web" beforeDir="false" afterPath="$PROJECT_DIR$/ims_web" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/constants/ErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/constants/ErrorCode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/constants/ErrorMsg.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/constants/ErrorMsg.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/request/ProductRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/request/ProductRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/impl/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/impl/ProductRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/ProductMasterServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/ProductMasterServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/ProductMasterservice.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/ProductMasterservice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/InventoryApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/InventoryApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/config/JpaAuditingConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/config/JpaAuditingConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/controller/BranchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/controller/BranchController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/AbstractBaseEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/AbstractBaseEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/AuditBaseEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/AuditBaseEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/CustomerMaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/entity/CustomerMaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/request/CustomerRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/request/CustomerRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/response/CustomerResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/domen/response/CustomerResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/BranchRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/BranchRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/CustomerRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/repository/CustomerRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/BranchMasterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/BranchMasterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/BranchMasterServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/BranchMasterServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/CustomerMasterServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/inventory/src/main/java/com/ims/inventory/service/impl/CustomerMasterServiceImp.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +40,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -69,36 +84,38 @@
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="2vl3w36XLXe7RISXTF4UBOc3Ch7" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
     <option name="showScratchesAndConsoles" value="false" />
     <option name="sortByType" value="true" />
     <option name="sortKey" value="BY_TYPE" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Application.InventoryApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.inventory [org.apache.maven.plugins:maven-clean-plugin:3.4.1:clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.inventory [org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.inventory [org.apache.maven.plugins:maven-install-plugin:3.1.3:install].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Yogesh Wankhede/Vasu/project/workspace_w/inventory&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Application.InventoryApplication.executor": "Run",
+    "Maven.inventory [org.apache.maven.plugins:maven-clean-plugin:3.4.1:clean].executor": "Run",
+    "Maven.inventory [org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile].executor": "Run",
+    "Maven.inventory [org.apache.maven.plugins:maven-install-plugin:3.1.3:install].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Yogesh Wankhede/Vasu/project/workspace_w/inventory",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;ChangesTree.GroupingKeys&quot;: [
-      &quot;directory&quot;
+  "keyToStringList": {
+    "ChangesTree.GroupingKeys": [
+      "directory"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="InventoryApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.ims.inventory.InventoryApplication" />
@@ -168,7 +185,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744714873789</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="commit for product search &amp; load rest">
+      <option name="closed" value="true" />
+      <created>1744745166756</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1744745166756</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -216,6 +241,7 @@
     <MESSAGE value="commit new entity classes" />
     <MESSAGE value="commit new latest changes" />
     <MESSAGE value="commit new latest changes in web" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit new latest changes in web" />
+    <MESSAGE value="commit for product search &amp; load rest" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit for product search &amp; load rest" />
   </component>
 </project>

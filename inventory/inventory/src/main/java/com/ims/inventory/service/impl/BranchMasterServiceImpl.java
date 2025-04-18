@@ -1,13 +1,16 @@
 package com.ims.inventory.service.impl;
 
 import com.ims.inventory.domen.entity.BranchMaster;
+import com.ims.inventory.domen.entity.CustomerMaster;
 import com.ims.inventory.domen.request.BranchRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
+import com.ims.inventory.domen.response.AutoCompleteResponse;
 import com.ims.inventory.domen.response.BranchResponse;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.repository.BranchRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -119,5 +122,26 @@ public class BranchMasterServiceImpl implements BranchMasterService {
         log.info("BranchMasterService::branchMapper:Branch mapper called.");
         branchMaster.setName(branchRequest.getName());
         branchMaster.setDescription(branchRequest.getDescription());
+    }
+
+    public List<AutoCompleteResponse> findAllBranchByNameIsActive(String name, Boolean isActive) throws ImsBusinessException {
+        List<BranchMaster> branchList = null;
+        if (StringUtils.isEmpty(name)) {
+            branchList = branchRepository.findTop15ByIsActiveOrderByNameAsc(isActive);
+        } else {
+            branchList = branchRepository.findByIsActiveAndNameIgnoreCaseContaining(isActive, name);
+        }
+        if (!ObjectUtils.isEmpty(branchList)) {
+            return branchList.stream().map(obj -> {
+                AutoCompleteResponse resp = new AutoCompleteResponse();
+                resp.setId(obj.getId());
+                resp.setName(obj.getName());
+                resp.setOption(obj.getCode());
+                return resp;
+            }).toList();
+        } else {
+            log.info("BranchMasterServiceImpl::findAllBranchByNameIsActive:: Search branch data not found.");
+            throw new ImsBusinessException("BRANCHOO1", "Branch not found.");
+        }
     }
 }

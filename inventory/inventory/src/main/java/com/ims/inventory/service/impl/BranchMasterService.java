@@ -3,6 +3,7 @@ package com.ims.inventory.service.impl;
 import com.ims.inventory.domen.request.BranchRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
 import com.ims.inventory.domen.request.RoleRequest;
+import com.ims.inventory.domen.response.AutoCompleteResponse;
 import com.ims.inventory.domen.response.BranchResponse;
 import com.ims.inventory.domen.response.RoleResponse;
 import com.ims.inventory.exception.ImsBusinessException;
@@ -17,4 +18,6 @@ public interface BranchMasterService {
     public BranchResponse editBranch(BranchRequest roleRequest) throws Exception;
 
     BranchResponse BranchDelete(RemoveRequest removeRequest) throws Exception;
+
+    List<AutoCompleteResponse> findAllBranchByNameIsActive(String name, Boolean isActive) throws ImsBusinessException;
 }

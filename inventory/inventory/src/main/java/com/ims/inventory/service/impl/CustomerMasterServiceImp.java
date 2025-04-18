@@ -38,7 +38,7 @@ public class CustomerMasterServiceImp implements CustomerMasterService{
         if (!ObjectUtils.isEmpty(customerList)) {
             return customerList.stream().map(obj -> {
                 CustomerResponse customer = new CustomerResponse();
-                customer.setCustomer_Name(obj.getCustomerName());
+                customer.setCustomerName(obj.getCustomerName());
                 return customer;
             }).toList();
         } else {
@@ -49,9 +49,7 @@ public class CustomerMasterServiceImp implements CustomerMasterService{
     private CustomerResponse createResponse(CustomerMaster customerMaster, String method) throws ImsBusinessException {
         if (ObjectUtils.isNotEmpty(customerMaster)) {
             CustomerResponse resp = new CustomerResponse();
-            resp.setCustomer_Name(customerMaster.getCustomerName());
-            resp.setStatus(SUCCESS);
-            resp.setMessage("Customer " + method + "successfully.");
+            resp.setCustomerName(customerMaster.getCustomerName());
             return resp;
         } else {
             throw new ImsBusinessException(CATEGORY_NOT_FOUND_CODE,

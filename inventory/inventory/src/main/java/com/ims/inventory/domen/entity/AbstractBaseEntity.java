@@ -4,10 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.util.UUID;
 
+@Data
 @MappedSuperclass
 public class AbstractBaseEntity {
 

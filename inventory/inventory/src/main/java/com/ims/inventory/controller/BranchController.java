@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/user-management/branch/")
+@RequestMapping("/api/v1/user-management/branch/")
 public class BranchController {
 
     @Autowired
@@ -51,5 +51,12 @@ public class BranchController {
         } catch (BadCredentialsException e) {
             throw new Exception("BranchController::addBranch:Exception occurred while branch deletion.", e);
         }
+    }
+
+    @PostMapping("dropdown")
+    public ResponseEntity<?> getSearchCustomer(
+            @RequestBody AutoCompleteRequest autoCompleteRequest) throws Exception {
+        return ResponseEntity.ok(branchMasterService.findAllBranchByNameIsActive(
+                autoCompleteRequest.getSearch(), true));
     }
 }
