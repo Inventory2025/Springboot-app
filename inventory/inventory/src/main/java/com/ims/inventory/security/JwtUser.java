@@ -16,6 +16,7 @@ public class JwtUser implements UserDetails {
     private final String password;
     private Timestamp lastLoginTime;
     private String roleId;
+    private String branchId;
     private long expTime;
     private String contactNumber;
     private Timestamp modifiedOn;
@@ -34,6 +35,7 @@ public class JwtUser implements UserDetails {
             boolean enabled,
             String firstName,
             String roleId,
+            String branchId,
             long expTime,
             String contactNumber,
             Timestamp modifiedOn,
@@ -47,6 +49,7 @@ public class JwtUser implements UserDetails {
         this.lastLoginTime = lastLoginTime;
         this.firstName = firstName;
         this.roleId = roleId;
+        this.branchId = branchId;
         this.expTime = expTime;
         this.contactNumber = contactNumber;
         this.modifiedOn = modifiedOn;
@@ -59,6 +62,14 @@ public class JwtUser implements UserDetails {
 
     public void setRoleId(String roleId) {
         this.roleId = roleId;
+    }
+
+    public String getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(String branchId) {
+        this.branchId = branchId;
     }
 
     public String getFirstName() {

@@ -6,6 +6,7 @@ public final class ImsConstants {
 
     public static final String USER_ID = "USER_ID";
     public static final String ROLE_ID = "ROLE_ID";
+    public static final String BRANCH_ID = "BRANCH_ID";
     public static final String TKN = "tkn";
 
     // Response Codes

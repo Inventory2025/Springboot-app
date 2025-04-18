@@ -2,6 +2,7 @@ package com.ims.inventory.security;
 
 import com.ims.inventory.domen.entity.RoleMaster;
 import com.ims.inventory.domen.entity.UserMaster;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -19,17 +20,20 @@ public final class JwtUserFactory {
         JwtUser jwtUser = null;
         if (user != null) {
             long expTime = 1000;
-            String roleId = "";
+            String roleId = StringUtils.EMPTY;
             RoleMaster role = user.getRoleMaster();
             if (role != null) {
                 roleId = role.getId();
                 expTime = expTime < role.getExpiryTime() ? role.getExpiryTime() : expTime;
+
             }
+            String branchId = user.getBranchMaster() != null ?  user.getBranchMaster().getId() : StringUtils.EMPTY;
             jwtUser = new JwtUser(user.getId(), user.getUsername(), user.getPassword(),
                     new Timestamp(System.currentTimeMillis()),
                     mapToGrantedAuthorities(user.getRoleMaster()),
                     true, user.getFirstName(),
                     roleId,
+                    branchId,
                     expTime, user.getPhoneNumber(),
                     new Timestamp(System.currentTimeMillis()),
                     new Timestamp(System.currentTimeMillis())

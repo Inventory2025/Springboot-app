@@ -1,8 +1,10 @@
 package com.ims.inventory.domen.response;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class ApiResponse<T> {
 
     private boolean success;
@@ -30,5 +32,14 @@ public class ApiResponse<T> {
         this.totalPages = Math.toIntExact((totalElements > pageSize ? totalElements / pageSize : 1));
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
+    }
+
+    // Static factory methods for convenience
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return new ApiResponse<>(true, message, data);
+    }
+
+    public static <T> ApiResponse<T> fail(String message, T data) {
+        return new ApiResponse<>(false, message, data);
     }
 }

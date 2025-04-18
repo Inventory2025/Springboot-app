@@ -38,7 +38,8 @@ public class UserMaster extends AuditBaseEntity {
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private RoleMaster roleMaster;
 
-  /*  @Enumerated(EnumType.STRING)
-    private UserRole role;*/
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "branch_id", referencedColumnName = "id")
+    private BranchMaster branchMaster;
 
 }
