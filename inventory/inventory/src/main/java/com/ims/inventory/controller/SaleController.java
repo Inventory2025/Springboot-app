@@ -4,6 +4,7 @@ import com.ims.inventory.domen.entity.SaleTrans;
 import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.SaleRequest;
 import com.ims.inventory.exception.ImsBusinessException;
+import com.ims.inventory.helpers.InvoicePdfService;
 import com.ims.inventory.service.impl.SaleMasterServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,5 +42,10 @@ public class SaleController {
     @PostMapping("load")
     public ResponseEntity<?> getSaleById(@Valid @RequestBody LoadRequest dto) throws ImsBusinessException {
         return ResponseEntity.ok(saleService.loadSale(dto));
+    }
+
+    @PostMapping("/download")
+    public void downloadInvoice(@RequestBody LoadRequest dto, HttpServletResponse response) throws Exception {
+        saleService.createPdf(dto, response);
     }
 }

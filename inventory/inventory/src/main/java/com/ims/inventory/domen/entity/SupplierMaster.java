@@ -1,10 +1,7 @@
 package com.ims.inventory.domen.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -32,14 +29,17 @@ public class SupplierMaster extends AuditBaseEntity{
     @Column(name = "address_line3")
     private String addressLine3;
 
-    @Column(name = "city")
-    private String city;
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
 
-    @Column(name = "state")
-    private String state;
+    @ManyToOne
+    @JoinColumn(name = "state_id")
+    private State state;
 
-    @Column(name = "country")
-    private String country;
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private Country country;
 
     @Column(name = "pin_code")
     private String pinCode;
