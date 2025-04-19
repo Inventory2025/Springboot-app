@@ -16,4 +16,5 @@ public class BranchRequest {
     private String description;
     private String code;
     private String address;
+
 }

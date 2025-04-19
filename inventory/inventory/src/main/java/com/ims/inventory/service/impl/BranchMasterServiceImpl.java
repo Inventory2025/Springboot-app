@@ -73,6 +73,7 @@ public class BranchMasterServiceImpl implements BranchMasterService {
         }
     }
 
+
     @Override
     public BranchResponse editBranch(BranchRequest branchRequest) throws Exception {
         log.info("BranchMasterService::Edit branch request :{}", branchRequest);
