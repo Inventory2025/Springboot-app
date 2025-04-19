@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 public class BranchRequest {
     @NotBlank(message = "Branch name should not null or empty.")
     private String name;
-
     private String description;
+    private String code;
+    private String address;
+
 }

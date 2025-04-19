@@ -8,6 +8,7 @@ import com.ims.inventory.domen.response.AutoCompleteResponse;
 import com.ims.inventory.domen.response.BranchResponse;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.repository.BranchRepository;
+import com.ims.inventory.utility.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,9 +63,8 @@ public class BranchMasterServiceImpl implements BranchMasterService {
         log.info("BranchMasterService::addBranch request :{}", branchRequest);
         try {
             BranchMaster branchMaster = new BranchMaster();
-            branchMaster.setName(branchMaster.getName());
-            branchMaster.setDescription(branchMaster.getDescription());
             branchMapper(branchMaster, branchRequest);
+            branchMaster.setActive(true);
             BranchMaster branch = branchRepository.save(branchMaster);
             log.info("BranchMasterService::addBranch:Branch save successfully.");
             return createResponse(branch, "Add");
@@ -72,6 +72,7 @@ public class BranchMasterServiceImpl implements BranchMasterService {
             throw new ImsBusinessException(BRANCH_ADD_EXCEPTION_CODE, BRANCH_ADD_EXCEPTION_MSG);
         }
     }
+
 
     @Override
     public BranchResponse editBranch(BranchRequest branchRequest) throws Exception {
@@ -121,6 +122,8 @@ public class BranchMasterServiceImpl implements BranchMasterService {
     private void branchMapper(BranchMaster branchMaster, BranchRequest branchRequest) {
         log.info("BranchMasterService::branchMapper:Branch mapper called.");
         branchMaster.setName(branchRequest.getName());
+        branchMaster.setCode(Util.generateCustomId());
+        branchMaster.setAddress(branchRequest.getAddress());
         branchMaster.setDescription(branchRequest.getDescription());
     }
 
