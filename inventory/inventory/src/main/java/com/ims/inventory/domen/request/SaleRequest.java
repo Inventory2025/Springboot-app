@@ -28,11 +28,14 @@ public class SaleRequest {
     @NotBlank(message = "Status is required")
     private String status;
 
+    private String tranCode;
+
     @NotEmpty(message = "At least one item is required")
     private List<SaleItemDto> items;
 
     @Data
     public static class SaleItemDto {
+        private String itemCode;
         @NotBlank(message = "Product code is required")
         private String productCode;
 
@@ -54,5 +57,6 @@ public class SaleRequest {
         @NotNull(message = "Subtotal is required")
         @PositiveOrZero(message = "Subtotal must be 0 or greater")
         private BigDecimal subTotal;
+
     }
 }

@@ -28,7 +28,7 @@ public class JdbcTemplateService {
         FilterResponse resp = new FilterResponse();
 
         List<Map<String, Object>> list = jdbcTemplate.queryForList(query);
-        int totalPages = (list.size() / (pageSize > 0 ? pageSize : 1));
+        int totalPages = (int) Math.ceil((double) list.size() / (pageSize > 0 ? pageSize : 1));
         Page page = new Page(
                 pageSize,
                 pageNo,

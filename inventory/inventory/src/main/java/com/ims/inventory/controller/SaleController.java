@@ -1,7 +1,9 @@
 package com.ims.inventory.controller;
 
 import com.ims.inventory.domen.entity.SaleTrans;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.SaleRequest;
+import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.service.impl.SaleMasterServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +23,7 @@ public class SaleController {
     private SaleMasterServiceImpl saleService;
 
     @PostMapping("create")
-    public ResponseEntity<?> create(@Valid @RequestBody SaleRequest dto, HttpServletRequest request) {
+    public ResponseEntity<?> create(@Valid @RequestBody SaleRequest dto, HttpServletRequest request) throws ImsBusinessException {
         return ResponseEntity.ok(saleService.save(dto, request));
     }
 
@@ -34,5 +36,10 @@ public class SaleController {
     @GetMapping
     public ResponseEntity<?> getAllActive() {
         return ResponseEntity.ok(saleService.getAll());
+    }
+
+    @PostMapping("load")
+    public ResponseEntity<?> getSaleById(@Valid @RequestBody LoadRequest dto) throws ImsBusinessException {
+        return ResponseEntity.ok(saleService.loadSale(dto));
     }
 }
