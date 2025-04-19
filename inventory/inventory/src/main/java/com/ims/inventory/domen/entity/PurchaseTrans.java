@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
@@ -32,14 +32,8 @@ public class PurchaseTrans extends AuditBaseEntity{
     @Column(name = "order_tax_per")
     private BigDecimal orderTaxPer;
 
-    @Column(name = "discount_per")
-    private BigDecimal discountPer;
-
     @Column(name = "order_tax")
     private BigDecimal orderTax;
-
-    @Column(name = "discount")
-    private BigDecimal discount;
 
     @Column(name = "shipping_cost")
     private BigDecimal shippingCost;

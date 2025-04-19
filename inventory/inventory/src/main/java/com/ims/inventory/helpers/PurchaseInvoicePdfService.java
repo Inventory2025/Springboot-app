@@ -1,5 +1,6 @@
 package com.ims.inventory.helpers;
 
+import com.ims.inventory.domen.request.PurchaseRequest;
 import com.ims.inventory.domen.request.SaleRequest;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
@@ -13,15 +14,14 @@ import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.io.IOException;
-import java.math.BigDecimal;
 
 @Service
-public class InvoicePdf2Service {
+public class PurchaseInvoicePdfService {
 
-    public void exportInvoice(SaleRequest saleRequest, HttpServletResponse response) throws IOException {
+    public void exportInvoice(PurchaseRequest purchaseRequest, HttpServletResponse response) throws IOException {
         Document document = new Document(PageSize.A4, 40, 40, 40, 40);
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=purchase_invoice.pdf");
 
         try {
             PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
@@ -34,7 +34,7 @@ public class InvoicePdf2Service {
             Font totalFont = new Font(Font.HELVETICA, 12, Font.BOLD, Color.blue);
 
             // Title
-            Paragraph title = new Paragraph("SALE INVOICE", titleFont);
+            Paragraph title = new Paragraph("PURCHASE INVOICE", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
             document.add(Chunk.NEWLINE);
@@ -45,29 +45,29 @@ public class InvoicePdf2Service {
             infoTable.setWidths(new float[]{1, 2});
 
             infoTable.addCell(createCell1("Transaction Code:", labelFont));
-            infoTable.addCell(createCell1(saleRequest.getTranCode(), valueFont));
+            infoTable.addCell(createCell1(purchaseRequest.getTranCode(), valueFont));
 
-            infoTable.addCell(createCell1("Customer:", labelFont));
-            infoTable.addCell(createCell1(saleRequest.getCustomer(), valueFont));
+            infoTable.addCell(createCell1("Supplier:", labelFont));
+            infoTable.addCell(createCell1(purchaseRequest.getSupplier(), valueFont));
 
             infoTable.addCell(createCell1("Date:", labelFont));
-            infoTable.addCell(createCell1(saleRequest.getDate(), valueFont));
+            infoTable.addCell(createCell1(purchaseRequest.getDate(), valueFont));
 
             infoTable.addCell(createCell1("Status:", labelFont) );
-            infoTable.addCell(createCell1(saleRequest.getStatus(), valueFont));
+            infoTable.addCell(createCell1(purchaseRequest.getStatus(), valueFont));
 
             infoTable.addCell(createCell1("Note:", labelFont));
-            infoTable.addCell(createCell1(saleRequest.getNote(), valueFont));
+            infoTable.addCell(createCell1(purchaseRequest.getNote(), valueFont));
 
             document.add(infoTable);
             document.add(Chunk.NEWLINE);
 
             // Sale Items Table
-            PdfPTable itemTable = new PdfPTable(9);
+            PdfPTable itemTable = new PdfPTable(7);
             itemTable.setWidthPercentage(100);
-            itemTable.setWidths(new float[]{1.5f, 3f, 2f, 1f, 1.5f, 2f, 1.5f, 2f, 3f});
+            itemTable.setWidths(new float[]{1.5f, 3f, 2f, 1f, 1.5f, 2f, 3f});
 
-            String[] headers = {"Code", "Name", "Cost", "Qty", "Tax", "TaxAmt", "Disc", "DiscAmt", "Subtotal"};
+            String[] headers = {"Code", "Name", "Cost", "Qty", "Tax", "TaxAmt", "Subtotal"};
             for (String h : headers) {
                 PdfPCell headerCell = new PdfPCell(new Phrase(h, labelFont));
                 headerCell.setBackgroundColor(Color.LIGHT_GRAY);
@@ -75,15 +75,13 @@ public class InvoicePdf2Service {
                 itemTable.addCell(headerCell);
             }
 
-            for (SaleRequest.SaleItemDto item : saleRequest.getItems()) {
+            for (PurchaseRequest.PurchaseItemDto item : purchaseRequest.getItems()) {
                 itemTable.addCell(createCell1(item.getProductCode(), tableValueFont));
                 itemTable.addCell(createCell1(item.getProductName(), tableValueFont));
                 itemTable.addCell(createCell(item.getUnitCost() != null ? item.getUnitCost().toString() : "", tableValueFont));
                 itemTable.addCell(createCell(item.getQuantity() != null ? item.getQuantity().toString() : "", tableValueFont));
                 itemTable.addCell(createCell(item.getTax() != null ? item.getTax().toString() : "", tableValueFont));
                 itemTable.addCell(createCell(item.getTaxAmt() != null ? item.getTaxAmt().toString() : "", tableValueFont));
-                itemTable.addCell(createCell(item.getDiscount() != null ? item.getDiscount().toString() : "", tableValueFont));
-                itemTable.addCell(createCell(item.getDiscountAmt() != null ? item.getDiscountAmt().toString() : "", tableValueFont));
                 itemTable.addCell(createCell(item.getSubTotal() != null ? item.getSubTotal().toString() : "", tableValueFont));
             }
 
@@ -97,22 +95,19 @@ public class InvoicePdf2Service {
             totalTable.setWidths(new float[]{1, 1});
 
             totalTable.addCell(createCell("Order Tax:", labelFont));
-            totalTable.addCell(createCell(saleRequest.getOrderTax() != null ? saleRequest.getOrderTax().toString() : "0", valueFont));
-
-            totalTable.addCell(createCell("Discount:", labelFont));
-            totalTable.addCell(createCell(saleRequest.getDiscount() != null ? saleRequest.getDiscount().toString() : "0", valueFont));
+            totalTable.addCell(createCell(purchaseRequest.getOrderTax() != null ? purchaseRequest.getOrderTax().toString() : "0", valueFont));
 
             totalTable.addCell(createCell("Shipping Cost:", labelFont));
-            totalTable.addCell(createCell(saleRequest.getShippingCost() != null ? saleRequest.getShippingCost().toString() : "0", valueFont));
+            totalTable.addCell(createCell(purchaseRequest.getShippingCost() != null ? purchaseRequest.getShippingCost().toString() : "0", valueFont));
 
             totalTable.addCell(createCell("Grand Total:", labelFont));
-            totalTable.addCell(createCell(saleRequest.getGrandTotal() != null ? saleRequest.getGrandTotal().toString() : "0", totalFont));
+            totalTable.addCell(createCell(purchaseRequest.getGrandTotal() != null ? purchaseRequest.getGrandTotal().toString() : "0", totalFont));
 
             document.add(totalTable);
 
             // 🔲 Add rectangle border
             PdfContentByte canvas = writer.getDirectContent();
-            Rectangle rect = new Rectangle(
+            com.lowagie.text.Rectangle rect = new com.lowagie.text.Rectangle(
                     document.leftMargin() - 10,
                     document.bottomMargin() - 10,
                     document.getPageSize().getWidth() - document.rightMargin() + 10,
@@ -144,5 +139,4 @@ public class InvoicePdf2Service {
         cell.setPadding(5);
         return cell;
     }
-
 }

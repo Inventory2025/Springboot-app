@@ -1,0 +1,57 @@
+package com.ims.inventory.domen.request;
+
+import jakarta.validation.constraints.*;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Data
+public class PurchaseRequest {
+
+    @NotNull(message = "Supplier ID is required")
+    private String supplier;
+    @NotNull(message = "Date is required")
+    private String date;
+    private BigDecimal orderTax;
+    private BigDecimal orderTaxPer;
+    private BigDecimal shippingCost;
+
+    @Min(value = 0, message = "Grand total must be 0 or greater")
+    private BigDecimal grandTotal;
+    private String note;
+
+    @NotBlank(message = "Status is required")
+    private String status;
+
+    private String tranCode;
+
+    @NotEmpty(message = "At least one item is required")
+    private List<PurchaseRequest.PurchaseItemDto> items;
+
+    @Data
+    public static class PurchaseItemDto {
+        private String itemCode;
+        @NotBlank(message = "Product code is required")
+        private String productCode;
+
+        private String productName;
+
+        @NotNull(message = "Unit cost is required")
+        @PositiveOrZero(message = "Unit cost must be 0 or greater")
+        private BigDecimal unitCost;
+
+        @NotNull(message = "Quantity is required")
+        @Min(value = 1, message = "Quantity must be at least 1")
+        private Integer quantity;
+
+        private BigDecimal tax;
+        private BigDecimal taxAmt;
+
+        @NotNull(message = "Subtotal is required")
+        @PositiveOrZero(message = "Subtotal must be 0 or greater")
+        private BigDecimal subTotal;
+
+    }
+
+}
