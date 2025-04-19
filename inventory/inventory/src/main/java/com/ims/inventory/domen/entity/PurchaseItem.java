@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
-@Builder
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
@@ -27,9 +26,6 @@ public class PurchaseItem extends AuditBaseEntity{
 
     @Column(name = "unitPrice")
     private BigDecimal unitPrice;
-
-    @Column(name = "discount")
-    private BigDecimal discount;
 
     @Column(name = "tax")
     private BigDecimal tax;

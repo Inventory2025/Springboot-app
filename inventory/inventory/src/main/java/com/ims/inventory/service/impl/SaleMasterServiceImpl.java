@@ -8,6 +8,8 @@ import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.SaleRequest;
 import com.ims.inventory.domen.response.ApiResponse;
 import com.ims.inventory.exception.ImsBusinessException;
+import com.ims.inventory.helpers.InvoicePdf2Service;
+import com.ims.inventory.helpers.InvoicePdfService;
 import com.ims.inventory.repository.BranchRepository;
 import com.ims.inventory.repository.CustomerRepository;
 import com.ims.inventory.repository.SaleRepository;
@@ -15,11 +17,14 @@ import com.ims.inventory.repository.UserMasterRepository;
 import com.ims.inventory.repository.impl.ProductRepository;
 import com.ims.inventory.utility.Util;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -38,6 +43,8 @@ public class SaleMasterServiceImpl {
     private final ProductRepository productRepo;
     private final UserMasterRepository userMasterRepo;
     private final BranchRepository branchRepo;
+    private final InvoicePdfService invoicePdfService;
+    private final InvoicePdf2Service invoicePdf2Service;
 
     public ApiResponse<String> save(SaleRequest dto, HttpServletRequest request) throws ImsBusinessException {
         SaleTrans sale = new SaleTrans();
@@ -136,6 +143,15 @@ public class SaleMasterServiceImpl {
         sale.setItems(items);
         sale.setTranCode(saleTran.getTransCode());
         return sale;
+    }
+
+    public void createPdf(LoadRequest loadRequest, HttpServletResponse response) throws ImsBusinessException, IOException {
+        SaleRequest sale = loadSale(loadRequest);
+        if (ObjectUtils.isNotEmpty(sale)) {
+            invoicePdf2Service.exportInvoice(sale, response);
+        } else {
+            throw new ImsBusinessException("Sale01", "Sale not found for id :"+loadRequest.getRecordCode());
+        }
     }
 
 }
