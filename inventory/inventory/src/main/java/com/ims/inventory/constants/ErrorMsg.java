@@ -29,4 +29,15 @@ public final class ErrorMsg {
 
     public static final String PRODUCT_NOT_FOUND_MSG = "Product not Found.";
     public static final String PRODUCT_LOAD_EXCEPTION_MSG = "Exception occurred in load product.";
+
+    public static final String CITY_NOT_FOUND_MSG = "City not Found.";
+    public static final String CITY_EDIT_EXCEPTION_MSG = "Exception occurred in edit City.";
+    public static final String CITY_ADD_EXCEPTION_MSG = "Exception occurred in add City.";
+    public static final String CITY_DELETE_EXCEPTION_MSG = "Exception occurred in delete City.";
+
+    public static final String COUNTRY_NOT_FOUND_MSG = "Country not Found.";
+    public static final String COUNTRY_EDIT_EXCEPTION_MSG = "Exception occurred in edit Country.";
+    public static final String COUNTRY_ADD_EXCEPTION_MSG = "Exception occurred in add Country.";
+    public static final String COUNTRY_DELETE_EXCEPTION_MSG = "Exception occurred in delete Country.";
+
 }

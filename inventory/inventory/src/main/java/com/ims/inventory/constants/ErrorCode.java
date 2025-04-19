@@ -29,4 +29,14 @@ public final class ErrorCode {
 
     public static final String PRODUCT_NOT_FOUND_CODE = "LOC1004";
     public static final String PRODUCT_LOAD_EXCEPTION_CODE = "LOC1005";
+
+    public static final String CITY_NOT_FOUND_CODE = "CT1001";
+    public static final String CITY_EDIT_EXCEPTION_CODE = "CT1002";
+    public static final String CITY_ADD_EXCEPTION_CODE = "CT1003";
+    public static final String CITY_DELETE_EXCEPTION_CODE = "CT1003";
+
+    public static final String COUNTRY_NOT_FOUND_CODE = "C1001";
+    public static final String COUNTRY_EDIT_EXCEPTION_CODE = "C1002";
+    public static final String COUNTRY_ADD_EXCEPTION_CODE = "C1003";
+    public static final String COUNTRY_DELETE_EXCEPTION_CODE = "C1003";
 }
