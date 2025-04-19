@@ -1,6 +1,7 @@
 package com.ims.inventory.controller;
 
 import com.ims.inventory.domen.request.*;
+import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.service.RoleMasterService;
 import com.ims.inventory.service.impl.BranchMasterService;
 import jakarta.validation.Valid;
@@ -60,5 +61,16 @@ public class BranchController {
             @RequestBody AutoCompleteRequest autoCompleteRequest) throws Exception {
         return ResponseEntity.ok(branchMasterService.findAllBranchByNameIsActive(
                 autoCompleteRequest.getSearch(), true));
+    }
+
+    @PostMapping("load")
+    public ResponseEntity<?> getSaleById(@Valid @RequestBody LoadRequest dto) throws ImsBusinessException {
+        return ResponseEntity.ok(branchMasterService.loadBranch(dto));
+    }
+
+    @PostMapping("branchDropdown")
+    public ResponseEntity<?> getBranchDropDown(
+            @RequestBody BranchRequest branchRequest) throws Exception {
+        return ResponseEntity.ok(branchMasterService.findAllBranch(branchRequest));
     }
 }

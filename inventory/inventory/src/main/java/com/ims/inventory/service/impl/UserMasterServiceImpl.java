@@ -7,6 +7,8 @@ import com.ims.inventory.domen.response.UserDetailResponse;
 import com.ims.inventory.domen.response.UserResponse;
 import com.ims.inventory.enums.CrudMethods;
 import com.ims.inventory.exception.ImsBusinessException;
+import com.ims.inventory.repository.BranchRepository;
+import com.ims.inventory.repository.RoleRepository;
 import com.ims.inventory.repository.UserMasterRepository;
 import com.ims.inventory.service.UserMasterService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,12 @@ public class UserMasterServiceImpl implements UserMasterService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    BranchRepository branchRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Override
     public List<UserDetailResponse> findAllUserByIsActive(Boolean isActive) throws ImsBusinessException{
@@ -68,6 +76,7 @@ public class UserMasterServiceImpl implements UserMasterService {
         try {
             UserMaster userMaster = new UserMaster();
             userMaster.setUsername(userRequest.getUserName());
+            userMaster.setActive(true);
             userMaster.setPassword(passwordEncoder.encode(userRequest.getPassword()));
             userMapper(userMaster, userRequest);
             UserMaster user = userMasterRepository.save(userMaster);
@@ -122,6 +131,8 @@ public class UserMasterServiceImpl implements UserMasterService {
         userMaster.setMiddleName(userRequest.getMiddleName());
         userMaster.setLastName(userRequest.getLastName());
         userMaster.setDescription(userRequest.getDescription());
+        userMaster.setBranchMaster(branchRepository.findById(userRequest.getBranchId()).orElse(null));
+        userMaster.setRoleMaster(roleRepository.findById(userRequest.getRoleId()).orElse(null));
     }
 
 

@@ -1,9 +1,6 @@
 package com.ims.inventory.controller;
 
-import com.ims.inventory.domen.request.FetchRolePageRequest;
-import com.ims.inventory.domen.request.FindRoleRequest;
-import com.ims.inventory.domen.request.RemoveRequest;
-import com.ims.inventory.domen.request.RoleRequest;
+import com.ims.inventory.domen.request.*;
 import com.ims.inventory.service.RoleMasterService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/user-management/role/")
+@RequestMapping("/api/v1/user-management/role/")
 public class RoleController {
 
     @Autowired
@@ -53,6 +50,13 @@ public class RoleController {
         } catch (BadCredentialsException e) {
             throw new Exception("RoleController::addRole:Exception occurred while role deletion.", e);
         }
+    }
+
+    @PostMapping("dropdown")
+    public ResponseEntity<?> getSearchCustomer(
+            @RequestBody RoleRequest roleRequest) throws Exception {
+        return ResponseEntity.ok(roleMasterService.findAllRole(
+                roleRequest));
     }
 
 }

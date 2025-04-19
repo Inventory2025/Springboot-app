@@ -6,7 +6,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-public class CustomerImportDto {
+public class
+CustomerImportDto {
 
     @NotBlank(message = "Customer name is required")
     private String customerName;

@@ -1,8 +1,11 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.RoleDto;
+import com.ims.inventory.domen.entity.CustomerMaster;
 import com.ims.inventory.domen.entity.RoleMaster;
 import com.ims.inventory.domen.request.*;
 import com.ims.inventory.domen.response.ApiResponse;
+import com.ims.inventory.domen.response.AutoCompleteResponse;
 import com.ims.inventory.domen.response.RoleResponse;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.mappers.RoleRowMapper;
@@ -11,11 +14,14 @@ import com.ims.inventory.repository.RoleRepository;
 import com.ims.inventory.service.RoleMasterService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ims.inventory.constants.ErrorCode.*;
 import static com.ims.inventory.constants.ErrorMsg.*;
@@ -125,7 +131,17 @@ public class RoleMasterServiceImpl implements RoleMasterService {
         roleMaster.setDescription(roleRequest.getDescription());
     }
 
+    public List<RoleDto> findAllRole(RoleRequest roleRequest) throws ImsBusinessException {
+        List<RoleMaster> roleMasterList = roleRepository.findAllIsacitve(true);
 
-
+        if (!ObjectUtils.isEmpty(roleMasterList)) {
+            return roleMasterList.stream()
+                    .map(role -> new RoleDto(role.getId(), role.getName(), role.getCode()))
+                    .collect(Collectors.toList());
+        } else {
+            log.info("CustomerServiceImpl::findAllRole:: active roles not found.");
+            throw new ImsBusinessException("CUST001", "Roles not found.");
+        }
+    }
 
 }

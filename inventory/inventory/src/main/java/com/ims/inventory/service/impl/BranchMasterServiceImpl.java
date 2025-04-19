@@ -1,9 +1,12 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.BranchDto;
+import com.ims.inventory.domen.dto.RoleDto;
 import com.ims.inventory.domen.entity.BranchMaster;
 import com.ims.inventory.domen.entity.CustomerMaster;
-import com.ims.inventory.domen.request.BranchRequest;
-import com.ims.inventory.domen.request.RemoveRequest;
+import com.ims.inventory.domen.entity.RoleMaster;
+import com.ims.inventory.domen.entity.SaleTrans;
+import com.ims.inventory.domen.request.*;
 import com.ims.inventory.domen.response.AutoCompleteResponse;
 import com.ims.inventory.domen.response.BranchResponse;
 import com.ims.inventory.exception.ImsBusinessException;
@@ -15,8 +18,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ims.inventory.constants.ErrorCode.*;
 import static com.ims.inventory.constants.ErrorMsg.*;
@@ -72,7 +77,6 @@ public class BranchMasterServiceImpl implements BranchMasterService {
             throw new ImsBusinessException(BRANCH_ADD_EXCEPTION_CODE, BRANCH_ADD_EXCEPTION_MSG);
         }
     }
-
 
     @Override
     public BranchResponse editBranch(BranchRequest branchRequest) throws Exception {
@@ -145,6 +149,37 @@ public class BranchMasterServiceImpl implements BranchMasterService {
         } else {
             log.info("BranchMasterServiceImpl::findAllBranchByNameIsActive:: Search branch data not found.");
             throw new ImsBusinessException("BRANCHOO1", "Branch not found.");
+        }
+    }
+
+    public BranchRequest loadBranch(LoadRequest loadRequest) throws ImsBusinessException {
+        BranchMaster branchTran = branchRepository.findByIdAndIsActive(loadRequest.getRecordCode(), true);
+        if (ObjectUtils.isNotEmpty(branchTran)) {
+            return mapperDto(branchTran);
+        } else {
+            throw new ImsBusinessException("Sale01", "Sale not found for id :"+loadRequest.getRecordCode());
+        }
+    }
+
+    private BranchRequest mapperDto(BranchMaster branchTran) {
+        BranchRequest branch = new BranchRequest();
+        branch.setCode(branchTran.getCode());
+        branch.setName(branchTran.getName());
+        branch.setAddress(branchTran.getAddress());
+        branch.setDescription(branchTran.getDescription());
+        return branch;
+    }
+
+    public List<BranchDto> findAllBranch(BranchRequest branchRequest) throws ImsBusinessException {
+        List<BranchMaster> branchMasterList = branchRepository.findAllIsacitve(true);
+
+        if (!ObjectUtils.isEmpty(branchMasterList)) {
+            return branchMasterList.stream()
+                    .map(role -> new BranchDto(role.getId(), role.getName(), role.getCode()))
+                    .collect(Collectors.toList());
+        } else {
+            log.info("CustomerServiceImpl::findAllRole:: active roles not found.");
+            throw new ImsBusinessException("CUST001", "Roles not found.");
         }
     }
 }
