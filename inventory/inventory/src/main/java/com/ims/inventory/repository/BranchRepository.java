@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface BranchRepository extends JpaRepository<BranchMaster, String> {
 
-    Optional<BranchMaster> findByName(String name);
+    Optional<BranchMaster> findByCode(String code);
 
     Optional<BranchMaster> findById(String id);
 

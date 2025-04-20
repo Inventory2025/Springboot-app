@@ -82,7 +82,7 @@ public class BranchMasterServiceImpl implements BranchMasterService {
     public BranchResponse editBranch(BranchRequest branchRequest) throws Exception {
         log.info("BranchMasterService::Edit branch request :{}", branchRequest);
         try {
-            BranchMaster branchMaster = loadBranchByName(branchRequest.getName());
+            BranchMaster branchMaster = loadBranchByName(branchRequest.getCode());
             branchMapper(branchMaster, branchRequest);
             branchMaster = branchRepository.save(branchMaster);
             log.info("BranchService::addBranch:Branch edit successfully.");
@@ -112,9 +112,9 @@ public class BranchMasterServiceImpl implements BranchMasterService {
         }
     }
 
-    private BranchMaster loadBranchByName(String name) throws ImsBusinessException {
+    private BranchMaster loadBranchByName(String code) throws ImsBusinessException {
         log.info("BranchMasterService::loadBranchByName:Load branch called.");
-        Optional<BranchMaster> branchMasterObj = branchRepository.findByName(name);
+        Optional<BranchMaster> branchMasterObj = branchRepository.findByCode(code);
         if (branchMasterObj.isPresent() && ObjectUtils.isNotEmpty(branchMasterObj.get())) {
             log.info("BranchMasterService::loadBranchByName:Branch found.");
             return branchMasterObj.get();
