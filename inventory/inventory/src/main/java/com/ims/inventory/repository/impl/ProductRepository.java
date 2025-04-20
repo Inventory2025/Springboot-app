@@ -11,9 +11,8 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<ProductMaster, String>, PageableJdbcRepository {
 
     Optional<ProductMaster> findByName(String name);
+
     Optional<ProductMaster> findByCode(String code);
-
-
 
     List<ProductMaster> findByIsActiveAndNameIgnoreCaseContaining(Boolean isActive, String keyword);
 

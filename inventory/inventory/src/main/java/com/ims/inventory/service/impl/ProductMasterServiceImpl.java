@@ -1,15 +1,13 @@
 package com.ims.inventory.service.impl;
 
-import com.ims.inventory.domen.entity.BradMaster;
-import com.ims.inventory.domen.entity.CategoryMaster;
-import com.ims.inventory.domen.entity.ProductMaster;
-import com.ims.inventory.domen.entity.UnitMaster;
+import com.ims.inventory.domen.entity.*;
 import com.ims.inventory.domen.request.CategoryRequest;
 import com.ims.inventory.domen.request.ProductRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
 import com.ims.inventory.domen.response.*;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.mappers.RoleRowMapper;
+import com.ims.inventory.repository.ProductStockRepository;
 import com.ims.inventory.repository.RoleRepository;
 import com.ims.inventory.repository.impl.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +30,9 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ProductStockRepository productStockRepository;
 
     @Override
     public List<ProductResponse> findAllProductByIsActive(Boolean isActive) throws ImsBusinessException {
@@ -103,6 +104,11 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
             productDetailMapper(productResp, productMaster);
             if (ObjectUtils.isNotEmpty(productResp)) {
                 log.info("ProductService::loadProduct :: Product load successfully.");
+                Optional<ProductStock> productStock = productStockRepository.findById(productMaster.getId());
+                if (productStock.isPresent()) {
+                    Integer pStock = productStock.get().getStock();
+                    productResp.setStock((pStock > 0 ? pStock : 0));
+                }
                 return productResp;
             } else {
                 throw new ImsBusinessException(PRODUCT_NOT_FOUND_CODE,
@@ -169,6 +175,7 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
         productMaster.setImageUrl(productRequest.getImageUrl());
         productMaster.setStatus(productRequest.getStatus());
         productMaster.setDescription(productRequest.getDescription());
+        productMaster.setStock(0);
     }
 
     @Override

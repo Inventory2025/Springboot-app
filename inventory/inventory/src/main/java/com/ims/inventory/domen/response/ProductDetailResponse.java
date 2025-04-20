@@ -24,6 +24,7 @@ public class ProductDetailResponse {
     private UnitMaster saleUnit;
     private UnitMaster purchaseUnit;
     private Integer quantity;
+    private Integer stock;
     private BigDecimal stockAlert;
     private BigDecimal discount;
     private BigDecimal taxPer;

@@ -74,7 +74,7 @@ public class JdbcTemplateService {
         }
     }
 
-    private List<Map<String, Object>> queryForList(String query) {
+    public List<Map<String, Object>> queryForList(String query) {
         log.info("queryForList ---->"+query);
         return jdbcTemplate.queryForList(query);
     }
