@@ -1,6 +1,8 @@
 package com.ims.inventory.service;
 
 import com.ims.inventory.domen.entity.UserMaster;
+import com.ims.inventory.domen.request.BranchRequest;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
 import com.ims.inventory.domen.request.UserRequest;
 import com.ims.inventory.domen.response.UserDetailResponse;
@@ -18,4 +20,6 @@ public interface UserMasterService {
    public UserResponse editUser(UserRequest userRequest) throws Exception;
 
    UserResponse userDelete(RemoveRequest removeRequest) throws Exception;
+
+   public UserRequest loadUser(LoadRequest loadRequest) throws ImsBusinessException;
 }

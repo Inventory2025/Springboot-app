@@ -1,8 +1,10 @@
 package com.ims.inventory.controller;
 
 import com.ims.inventory.domen.request.FindUserRequest;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
 import com.ims.inventory.domen.request.UserRequest;
+import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.service.UserMasterService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,11 @@ public class UserController {
         } catch (BadCredentialsException e) {
             throw new Exception("Incorrect username or password", e);
         }
+    }
+
+    @PostMapping("load")
+    public ResponseEntity<?> getUserById(@Valid @RequestBody LoadRequest dto) throws ImsBusinessException {
+        return ResponseEntity.ok(userMasterService.loadUser(dto));
     }
 
 

@@ -1,6 +1,10 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.entity.BranchMaster;
+import com.ims.inventory.domen.entity.RoleMaster;
 import com.ims.inventory.domen.entity.UserMaster;
+import com.ims.inventory.domen.request.BranchRequest;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
 import com.ims.inventory.domen.request.UserRequest;
 import com.ims.inventory.domen.response.UserDetailResponse;
@@ -133,6 +137,33 @@ public class UserMasterServiceImpl implements UserMasterService {
         userMaster.setDescription(userRequest.getDescription());
         userMaster.setBranchMaster(branchRepository.findById(userRequest.getBranchId()).orElse(null));
         userMaster.setRoleMaster(roleRepository.findById(userRequest.getRoleId()).orElse(null));
+    }
+
+    public UserRequest loadUser(LoadRequest loadRequest) throws ImsBusinessException {
+        UserMaster userTran = userMasterRepository.findByIdAndIsActive(loadRequest.getRecordCode(), true);
+        if (ObjectUtils.isNotEmpty(userTran)) {
+            return mapperDto(userTran);
+        } else {
+            throw new ImsBusinessException("Sale01", "Sale not found for id :"+loadRequest.getRecordCode());
+        }
+    }
+
+    private UserRequest mapperDto(UserMaster userTran) {
+        UserRequest user = new UserRequest();
+        user.setUserName(userTran.getUsername());
+        user.setPhoneNumber(userTran.getPhoneNumber());
+        user.setEmail(userTran.getEmailId());
+        user.setPassword(userTran.getPassword());
+        user.setFirstName(userTran.getFirstName());
+        user.setMiddleName(userTran.getMiddleName());
+        user.setLastName(userTran.getLastName());
+        user.setDescription(userTran.getDescription());
+//        user.setConfirmPassword(userTran.get);
+        BranchMaster branchMaster = branchRepository.findByIdAndIsActive(userTran.getBranchMaster().getId(), true);
+        user.setBranchId(branchMaster.getName());
+        RoleMaster roleMaster = roleRepository.findByIdAndIsActive(userTran.getRoleMaster().getId(), true);
+        user.setRoleId(roleMaster.getName());
+        return user;
     }
 
 

@@ -1,15 +1,19 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.BranchDto;
+import com.ims.inventory.domen.dto.CategoryDto;
 import com.ims.inventory.domen.entity.BranchMaster;
 import com.ims.inventory.domen.entity.CategoryMaster;
 import com.ims.inventory.domen.request.BranchRequest;
 import com.ims.inventory.domen.request.CategoryRequest;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
 import com.ims.inventory.domen.response.BranchResponse;
 import com.ims.inventory.domen.response.CategoryResponse;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.repository.BranchRepository;
 import com.ims.inventory.repository.CategoryRepository;
+import com.ims.inventory.utility.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ims.inventory.constants.ErrorCode.*;
 import static com.ims.inventory.constants.ErrorMsg.*;
@@ -63,9 +68,8 @@ public class CategoryMasterServiceImpl implements CategoryMasterService{
         log.info("CategoryMasterService::addCategory request :{}", categoryRequest);
         try {
             CategoryMaster categoryMaster = new CategoryMaster();
-            categoryMaster.setName(categoryMaster.getName());
-            categoryMaster.setDescription(categoryMaster.getDescription());
             categoryMapper(categoryMaster, categoryRequest);
+            categoryMaster.setActive(true);
             CategoryMaster category = categoryRepository.save(categoryMaster);
             log.info("CategoryMasterService::addCategory:Category save successfully.");
             return createResponse(category, "Add");
@@ -80,6 +84,7 @@ public class CategoryMasterServiceImpl implements CategoryMasterService{
         try {
             CategoryMaster categoryMaster = loadCategoryByName(categoryRequest.getName());
             categoryMapper(categoryMaster, categoryRequest);
+            categoryMaster.setActive(true);
             categoryMaster = categoryRepository.save(categoryMaster);
             log.info("CategoryService::addCategory:Category edit successfully.");
             return createResponse(categoryMaster, "Edit");
@@ -118,7 +123,39 @@ public class CategoryMasterServiceImpl implements CategoryMasterService{
     }
     private void categoryMapper(CategoryMaster categoryMaster, CategoryRequest categoryRequest) {
         log.info("CategoryMasterService::categoryMapper:Category mapper called.");
+        categoryMaster.setCode(Util.generateCustomId());
         categoryMaster.setName(categoryRequest.getName());
         categoryMaster.setDescription(categoryRequest.getDescription());
     }
+
+    public CategoryRequest loadCategory(LoadRequest loadRequest) throws ImsBusinessException {
+        CategoryMaster categoryTran = categoryRepository.findByIdAndIsActive(loadRequest.getRecordCode(), true);
+        if (ObjectUtils.isNotEmpty(categoryTran)) {
+            return mapperDto(categoryTran);
+        } else {
+            throw new ImsBusinessException("Sale01", "Sale not found for id :"+loadRequest.getRecordCode());
+        }
+    }
+
+    private CategoryRequest mapperDto(CategoryMaster categoryTran) {
+        CategoryRequest category = new CategoryRequest();
+        category.setName(categoryTran.getName());
+        category.setDescription(categoryTran.getDescription());
+        return category;
+    }
+
+    public List<CategoryDto> findAllCategory(CategoryRequest categoryRequest) throws ImsBusinessException {
+        List<CategoryMaster> categoryMasterList = categoryRepository.findAllIsacitve(true);
+
+        if (!ObjectUtils.isEmpty(categoryMasterList)) {
+            return categoryMasterList.stream()
+                    .map(category -> new CategoryDto(category.getId(), category.getName(), category.getCode()))
+                    .collect(Collectors.toList());
+        } else {
+            log.info("CustomerServiceImpl::findAllRole:: active roles not found.");
+            throw new ImsBusinessException("CUST001", "Roles not found.");
+        }
+    }
+
+
 }

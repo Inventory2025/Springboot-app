@@ -2,14 +2,15 @@ package com.ims.inventory.service.impl;
 
 import com.ims.inventory.domen.entity.*;
 import com.ims.inventory.domen.request.CategoryRequest;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.ProductRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
 import com.ims.inventory.domen.response.*;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.mappers.RoleRowMapper;
-import com.ims.inventory.repository.ProductStockRepository;
-import com.ims.inventory.repository.RoleRepository;
+import com.ims.inventory.repository.*;
 import com.ims.inventory.repository.impl.ProductRepository;
+import com.ims.inventory.utility.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,17 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
     private ProductRepository productRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private BrandRepository brandRepository;
+
+    @Autowired
+    private UnitRepository unitRepository;
+
+    @Autowired
     private ProductStockRepository productStockRepository;
+
 
     @Override
     public List<ProductResponse> findAllProductByIsActive(Boolean isActive) throws ImsBusinessException {
@@ -68,9 +79,8 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
         log.info("ProductMasterService::addProduct request :{}", productRequest);
         try {
             ProductMaster productMaster = new ProductMaster();
-            productMaster.setName(productMaster.getName());
-            productMaster.setDescription(productMaster.getDescription());
             productMapper(productMaster, productRequest);
+            productMaster.setActive(true);
             ProductMaster product = productRepository.save(productMaster);
             log.info("ProductMasterService::addProduct:Product save successfully.");
             return createResponse(product, "Add");
@@ -85,6 +95,7 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
         try {
             ProductMaster productMaster = loadProductByName(productRequest.getName());
             productMapper(productMaster, productRequest);
+            productMaster.setActive(true);
             productMaster = productRepository.save(productMaster);
             log.info("ProductService::addProduct:Product edit successfully.");
             return createResponse(productMaster, "Edit");
@@ -94,6 +105,7 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
             throw new ImsBusinessException(CATEGORY_EDIT_EXCEPTION_CODE, CATEGORY_EDIT_EXCEPTION_MSG);
         }
     }
+
 
     @Override
     public ProductDetailResponse loadProduct(ProductRequest productRequest) throws Exception {
@@ -151,9 +163,18 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
 
     private void productMapper(ProductMaster productMaster, ProductRequest productRequest) {
         log.info("ProductMasterService::productMapper:Product mapper called.");
+        productMaster.setCode(Util.generateCustomId());
         productMaster.setName(productRequest.getName());
-        productMaster.setDescription(productRequest.getDescription());
+        productMaster.setCategory(categoryRepository.findById(productRequest.getCategoryId()).orElse(null));
+        productMaster.setBrand(brandRepository.findById(productRequest.getBrandId()).orElse(null));
+        productMaster.setPrice(productRequest.getPrice());
+        productMaster.setSaleUnit(unitRepository.findById(productRequest.getUnitId()).orElse(null));
+        productMaster.setProductUnit(unitRepository.findById(productRequest.getUnitId()).orElse(null));
+        productMaster.setPurchaseUnit(unitRepository.findById(productRequest.getUnitId()).orElse(null));
+        productMaster.setQuantity(productRequest.getQuantity());
     }
+
+
 
     private void productDetailMapper(ProductDetailResponse productMaster, ProductMaster productRequest) {
         log.info("ProductMasterService::productDetailMapper:Product mapper called.");
@@ -199,4 +220,30 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
             throw new ImsBusinessException("ItemsOO1", "Items not found.");
         }
     }
+
+    public ProductRequest loadProductMater(LoadRequest loadRequest) throws ImsBusinessException {
+        ProductMaster productTran = productRepository.findByIdAndIsActive(loadRequest.getRecordCode(), true);
+        if (ObjectUtils.isNotEmpty(productTran)) {
+            return mapperDto(productTran);
+        } else {
+            throw new ImsBusinessException("Sale01", "Sale not found for id :"+loadRequest.getRecordCode());
+        }
+    }
+
+    private ProductRequest mapperDto(ProductMaster productTran) {
+        ProductRequest product = new ProductRequest();
+        product.setName(productTran.getName());
+        CategoryMaster categoryMaster = categoryRepository.findByIdAndIsActive(productTran.getCategory().getId(), true);
+        product.setCategoryId(categoryMaster.getId());
+
+        BradMaster brandMaster = brandRepository.findByIdAndIsActive(productTran.getBrand().getId(), true);
+        product.setBrandId(brandMaster.getId());
+        product.setPrice(productTran.getPrice());
+
+        UnitMaster unitMaster = unitRepository.findByIdAndIsActive(productTran.getSaleUnit().getId(), true);
+        product.setUnitId(unitMaster.getId());
+        product.setQuantity(productTran.getQuantity());
+        return product;
+    }
+
 }

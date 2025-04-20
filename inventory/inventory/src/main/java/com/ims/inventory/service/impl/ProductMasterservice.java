@@ -1,5 +1,6 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.LocationRequest;
 import com.ims.inventory.domen.request.ProductRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
@@ -23,4 +24,6 @@ public interface ProductMasterservice {
     ProductResponse ProductDelete(RemoveRequest removeRequest) throws Exception;
 
     List<AutoCompleteResponse> findAllProductByNameIsActive(String name, Boolean isActive) throws ImsBusinessException;
+
+    public ProductRequest loadProductMater(LoadRequest loadRequest) throws ImsBusinessException;
 }

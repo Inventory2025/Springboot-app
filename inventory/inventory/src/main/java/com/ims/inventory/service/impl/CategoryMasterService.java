@@ -1,7 +1,9 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.CategoryDto;
 import com.ims.inventory.domen.request.BranchRequest;
 import com.ims.inventory.domen.request.CategoryRequest;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
 import com.ims.inventory.domen.response.BranchResponse;
 import com.ims.inventory.domen.response.CategoryResponse;
@@ -17,4 +19,8 @@ public interface CategoryMasterService {
     public CategoryResponse editCategory(CategoryRequest categoryRequest) throws Exception;
 
     CategoryResponse CategoryDelete(RemoveRequest removeRequest) throws Exception;
+
+    public CategoryRequest loadCategory(LoadRequest loadRequest) throws ImsBusinessException;
+
+    public List<CategoryDto> findAllCategory(CategoryRequest categoryRequest) throws ImsBusinessException;
 }
