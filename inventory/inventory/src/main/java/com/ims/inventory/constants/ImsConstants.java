@@ -8,6 +8,9 @@ public final class ImsConstants {
     public static final String ROLE_ID = "ROLE_ID";
     public static final String BRANCH_ID = "BRANCH_ID";
     public static final String TKN = "tkn";
+    public static final String IS_ADMIN_ROLE = "IS_ADMIN_ROLE";
+
+    public static final String ADMIN_ROLE_ID = "admin-role-1";
 
     // Response Codes
     public final static int SC_OK = 200;

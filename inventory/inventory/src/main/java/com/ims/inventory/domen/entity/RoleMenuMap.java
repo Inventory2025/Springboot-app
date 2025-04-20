@@ -1,9 +1,6 @@
 package com.ims.inventory.domen.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,10 +10,12 @@ import lombok.EqualsAndHashCode;
 @Table(name = "tbl_role_menu_map", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 public class RoleMenuMap extends AuditBaseEntity {
 
-    @Column(name = "role_id", nullable = false)
-    private String roleId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private RoleMaster roleMaster;
 
-    @Column(name = "menu_id", nullable = false)
-    private String menuId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "bMComponent_id", referencedColumnName = "id")
+    private BMComponent bMComponent;
 
 }

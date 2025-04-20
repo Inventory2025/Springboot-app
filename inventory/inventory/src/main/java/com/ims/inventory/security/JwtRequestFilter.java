@@ -52,6 +52,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         String token = jwtUtil.refreshToken(jwt, user);
                         request.setAttribute(ImsConstants.USER_ID, user.getId());
                         request.setAttribute(ImsConstants.ROLE_ID, user.getRoleId());
+                        request.setAttribute(ImsConstants.IS_ADMIN_ROLE, ImsConstants.ADMIN_ROLE_ID.equalsIgnoreCase(user.getRoleId()));
                         request.setAttribute(ImsConstants.BRANCH_ID, user.getBranchId());
                         response.addHeader(ImsConstants.TKN, token);
                     } catch (Exception e) {

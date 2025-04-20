@@ -1,5 +1,6 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.constants.ImsConstants;
 import com.ims.inventory.domen.entity.BMCompDetail;
 import com.ims.inventory.domen.entity.BMCompElements;
 import com.ims.inventory.domen.request.*;
@@ -170,9 +171,10 @@ public class ModuleServiceImpl implements ModuleService {
         }
     }
 
-    public List<MenuResponse> getModuleMenu() throws Exception {
+    public List<MenuResponse> getModuleMenu(HttpServletRequest request) throws Exception {
         try {
-            return componentHelper.getModuleMenu();
+            String roleId = (String) request.getAttribute(ImsConstants.ROLE_ID);
+            return componentHelper.getModuleMenu(roleId);
         } catch (Exception e) {
             log.error("Exception occurs in getting menu.");
             throw e;

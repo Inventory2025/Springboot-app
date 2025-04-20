@@ -28,7 +28,7 @@ public interface ModuleService {
 
     Boolean updateModuleDesign(CreateRequest createRequest) throws Exception;
 
-    List<MenuResponse> getModuleMenu() throws Exception;
+    List<MenuResponse> getModuleMenu(HttpServletRequest request) throws Exception;
 
     FilterResponse getDropDownOptions(DropDownRequest req) throws Exception;
 

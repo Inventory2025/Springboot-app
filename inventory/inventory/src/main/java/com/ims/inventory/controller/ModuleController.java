@@ -43,8 +43,8 @@ public class ModuleController {
     }
 
     @GetMapping("menu")
-    public ResponseEntity<List<MenuResponse>> getModuleMenu() throws Exception{
-        return ResponseEntity.ok().body(moduleService.getModuleMenu());
+    public ResponseEntity<List<MenuResponse>> getModuleMenu(HttpServletRequest request) throws Exception{
+        return ResponseEntity.ok().body(moduleService.getModuleMenu(request));
     }
 
 

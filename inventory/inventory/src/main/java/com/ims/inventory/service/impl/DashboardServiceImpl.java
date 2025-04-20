@@ -24,15 +24,27 @@ public class DashboardServiceImpl {
     private final JdbcTemplateService jdbcTemplateService;
     private final ObjectMapper objectMapper;
 
+    public String queryCondReplace(Boolean isAdmin_Menu, String query, String condition, String pattern) {
+        if (isAdmin_Menu) {
+            query = query.replace(pattern, "");
+        } else {
+            query = query.replace(pattern, condition);
+        }
+        return query;
+    }
+
     public List<RecentSaleResponse> resentSales(HttpServletRequest request) {
 
-        //request.getAttribute(ImsConstants.USER_ID);
+        Boolean isAdminFlag = (Boolean) request.getAttribute(ImsConstants.IS_ADMIN_ROLE);
         String branchId = (String) request.getAttribute(ImsConstants.BRANCH_ID);
 
         String query = "select trans_code as reference, customer_name, tran_ststus, order_tax, shipping_cost, \n" +
                 "total_amount, status \n" +
                 "from vm_sale_detail\n" +
-                "where status != 'Retun' and branch_id = '"+branchId+"' order by sale_date desc limit 5";
+                "where status != 'Retun' $$BRANCH$$ order by sale_date desc limit 5";
+
+        query = queryCondReplace(isAdminFlag, query, " and branch_id = '"+branchId+"' ", "$$BRANCH$$");
+
 
         List<Map<String, Object>> result = jdbcTemplateService.queryForList(query);
         return mapToRecentSaleResponse(result);
@@ -78,13 +90,15 @@ public class DashboardServiceImpl {
 
     public List<CardsResponse> getCards(HttpServletRequest request) {
 
-        //request.getAttribute(ImsConstants.USER_ID);
+        Boolean isAdminFlag = (Boolean) request.getAttribute(ImsConstants.IS_ADMIN_ROLE);
         String branchId = (String) request.getAttribute(ImsConstants.BRANCH_ID);
 
         String query = "select type, status, sum(total_amount) as total_amount  \n" +
                 "from vm_sale_purchase \n" +
-                "where branch_id = '"+branchId+"' and status in ('Paid', 'Retun')\n" +
+                "where $$BRANCH$$ status in ('Paid', 'Retun')\n" +
                 "group by type, status";
+
+        query =  queryCondReplace(isAdminFlag, query, " branch_id = '"+branchId+"' and ", "$$BRANCH$$");
 
         List<Map<String, Object>> result = jdbcTemplateService.queryForList(query);
         List<CardsResponse> cardList = new ArrayList<>();
@@ -127,14 +141,16 @@ public class DashboardServiceImpl {
 
     public List<StockAlertsResponse> resentStockAlert(HttpServletRequest request) {
 
-        //request.getAttribute(ImsConstants.USER_ID);
+        Boolean isAdminFlag = (Boolean) request.getAttribute(ImsConstants.IS_ADMIN_ROLE);
         String branchId = (String) request.getAttribute(ImsConstants.BRANCH_ID);
 
         String query = "select tp.code, tp.\"name\" as product, tb.\"name\" as branch, st.stock, tp.stock_alert \n" +
                 "from vm_product_stock st\n" +
                 "inner join tbl_product tp on tp.id = st.product_id\n" +
                 "inner join tbl_branch tb on tb.id = st.branch_id\n" +
-                "where tb.id = '"+branchId+"' and st.stock < tp.stock_alert limit 5";
+                "where $$BRANCH$$ st.stock < tp.stock_alert limit 5";
+
+        query =  queryCondReplace(isAdminFlag, query, " tb.id = '"+branchId+"' and ", "$$BRANCH$$");
 
         List<Map<String, Object>> result = jdbcTemplateService.queryForList(query);
         return mapToStockAlertsResponse(result);
@@ -159,15 +175,17 @@ public class DashboardServiceImpl {
 
     public ChartDataResponse getSellingProducts(HttpServletRequest request) {
 
-        //request.getAttribute(ImsConstants.USER_ID);
+        Boolean isAdminFlag = (Boolean) request.getAttribute(ImsConstants.IS_ADMIN_ROLE);
         String branchId = (String) request.getAttribute(ImsConstants.BRANCH_ID);
 
         String query = "select tp.id as product_id, coalesce(tp.\"name\", '') as product, coalesce(sum(tsi.quantity), 0) as quantity \n" +
                 "from tbl_sale ts \n" +
                 "inner join tbl_sale_item tsi on tsi.sale_id = ts.id\n" +
                 "inner join tbl_product tp on tp.id = tsi.product_id \n" +
-                "where ts.branch_id = '"+branchId+"' and ts.is_active = true and tsi.is_active = true\n" +
+                "where $$BRANCH$$ ts.is_active = true and tsi.is_active = true\n" +
                 "group by tp.id, tp.\"name\" order by quantity desc limit 5";
+
+        query = queryCondReplace(isAdminFlag, query, " ts.branch_id = '"+branchId+"' and ", "$$BRANCH$$");
 
         List<Map<String, Object>> result = jdbcTemplateService.queryForList(query);
         return buildChartData(result);
@@ -196,7 +214,7 @@ public class DashboardServiceImpl {
 
     public BarChartDataResponse getSellAndPurchase(HttpServletRequest request) {
 
-        //request.getAttribute(ImsConstants.USER_ID);
+        Boolean isAdminFlag = (Boolean) request.getAttribute(ImsConstants.IS_ADMIN_ROLE);
         String branchId = (String) request.getAttribute(ImsConstants.BRANCH_ID);
 
         String query = "SELECT   day,  SUM(sales) AS sales,  SUM(purchases) AS purchases\n" +
@@ -207,17 +225,20 @@ public class DashboardServiceImpl {
                 "\t\t    SUM(sd.total_amount) AS sales,\n" +
                 "\t\t    0 AS purchases\n" +
                 "\t\t  FROM vm_sale_detail sd\n" +
-                "\t\t  WHERE sd.branch_id = '"+branchId+"' and sd.status != 'Retun'\n" +
+                "\t\t  WHERE $$BRANCH1$$  sd.status != 'Retun'\n" +
                 "\t\t  GROUP BY day, dow\n" +
                 "\t  UNION ALL\n" +
                 "\t\tSELECT TO_CHAR(pd.purchase_date, 'Dy') AS day, EXTRACT(DOW FROM pd.purchase_date) AS dow,\n" +
                 "\t\t    0 AS sales, SUM(pd.total_amount) AS purchases\n" +
                 "\t\t  FROM vm_purchase_detail pd\n" +
-                "\t\t  WHERE pd.branch_id = '"+branchId+"' and pd.status != 'Retun'\n" +
+                "\t\t  WHERE $$BRANCH2$$ pd.status != 'Retun'\n" +
                 "\t\t  GROUP BY day, dow\n" +
                 "\t) AS combined\n" +
                 "GROUP BY day, dow\n" +
                 "ORDER BY dow";
+
+        query = queryCondReplace(isAdminFlag, query, " sd.branch_id = '"+branchId+"' and ", "$$BRANCH1$$");
+        query = queryCondReplace(isAdminFlag, query, " pd.branch_id = '"+branchId+"' and ", "$$BRANCH2$$");
 
         List<Map<String, Object>> result = jdbcTemplateService.queryForList(query);
         return buildBarChartData(result);
@@ -253,12 +274,14 @@ public class DashboardServiceImpl {
 
     public DonutChartDataResponse getTopCustomer(HttpServletRequest request) {
 
-        //request.getAttribute(ImsConstants.USER_ID);
+        Boolean isAdminFlag = (Boolean) request.getAttribute(ImsConstants.IS_ADMIN_ROLE);
         String branchId = (String) request.getAttribute(ImsConstants.BRANCH_ID);
 
         String query = "select customer_name, sum(total_amount) as total_amount \n" +
                 "from vm_sale_detail \n" +
-                "where branch_id = '"+branchId+"' group by customer_name order by total_amount desc limit 5";
+                "$$BRANCH$$ group by customer_name order by total_amount desc limit 5";
+
+        query = queryCondReplace(isAdminFlag, query, " where branch_id = '"+branchId+"' ", "$$BRANCH$$");
 
         List<Map<String, Object>> result = jdbcTemplateService.queryForList(query);
         return buildChartDataForCustomer(result);

@@ -8,6 +8,7 @@ import com.ims.inventory.domen.response.MenuResponse;
 import com.ims.inventory.repository.BMCompDetailRepository;
 import com.ims.inventory.repository.BMCompElementRepository;
 import com.ims.inventory.repository.BMComponentRepository;
+import com.ims.inventory.repository.RoleMenuMapRepository;
 import com.ims.inventory.service.JdbcTemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -30,16 +31,19 @@ public class ComponentHelper {
     private BMCompDetailRepository bmCompDetailRepository;
     private BMCompElementRepository bmCompElementRepository;
     private JdbcTemplateService jdbcTemplateSerivce;
+    private RoleMenuMapRepository roleMenuMapRepository;
 
     @Autowired
     public ComponentHelper(BMComponentRepository bmComponentRepository,
                                 BMCompDetailRepository bmCompDetailRepository,
                                 BMCompElementRepository bmCompElementRepository,
-                                JdbcTemplateService jdbcTemplateSerivce){
+                                JdbcTemplateService jdbcTemplateSerivce,
+                                RoleMenuMapRepository roleMenuMapRepository){
         this.bmComponentRepository = bmComponentRepository;
         this.bmCompDetailRepository = bmCompDetailRepository;
         this.bmCompElementRepository = bmCompElementRepository;
         this.jdbcTemplateSerivce = jdbcTemplateSerivce;
+        this.roleMenuMapRepository = roleMenuMapRepository;
     }
 
     public List<BMComponent> getAllBMComponent() {
@@ -275,9 +279,10 @@ public class ComponentHelper {
         return sb.toString();
     }
 
-    public List<MenuResponse> getModuleMenu() {
+    public List<MenuResponse> getModuleMenu(String roleId) {
         try {
-            List<BMComponent> bmComponentList = bmComponentRepository.findByParentIsNullOrderByOrder();
+           // List<BMComponent> bmComponentList = bmComponentRepository.findByParentIsNullOrderByOrder();
+            List<BMComponent> bmComponentList = roleMenuMapRepository.findByParentIsNullOrderByOrder(roleId, Boolean.TRUE);
             List<MenuResponse> menuRespList = new ArrayList<>();
             if (null != bmComponentList && !bmComponentList.isEmpty()) {
                 for (BMComponent bmComp : bmComponentList) {
