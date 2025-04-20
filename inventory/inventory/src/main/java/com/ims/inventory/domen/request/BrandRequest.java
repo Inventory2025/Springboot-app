@@ -7,14 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductRequest {
-
+public class BrandRequest {
     @NotBlank(message = "Brand name should not null or empty.")
     @JsonProperty("name")
     private String name;
@@ -26,11 +23,11 @@ public class ProductRequest {
     private String brandId;
 
     @JsonProperty("price")
-    private BigDecimal price;
+    private String price;
 
     @JsonProperty("unit_id")
     private String unitId;
 
     @JsonProperty("quantity")
-    private Integer quantity;
+    private String quantity;
 }

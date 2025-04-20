@@ -18,4 +18,6 @@ public interface ProductRepository extends JpaRepository<ProductMaster, String>,
 
     List<ProductMaster> findTop15ByIsActiveOrderByNameAsc(Boolean isActive);
 
+    ProductMaster findByIdAndIsActive(String id, boolean isActive);
+
 }

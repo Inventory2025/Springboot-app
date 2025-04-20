@@ -1,6 +1,7 @@
 package com.ims.inventory.controller;
 
 import com.ims.inventory.domen.request.*;
+import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.service.impl.BranchMasterService;
 import com.ims.inventory.service.impl.CategoryMasterService;
 import jakarta.validation.Valid;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/category/")
+@RequestMapping("/api/v1/category/")
 public class CategoryController {
 
     @Autowired
@@ -51,5 +52,16 @@ public class CategoryController {
         } catch (BadCredentialsException e) {
             throw new Exception("CategoryController::addCategory:Exception occurred while category deletion.", e);
         }
+    }
+
+    @PostMapping("load")
+    public ResponseEntity<?> getSaleById(@Valid @RequestBody LoadRequest dto) throws ImsBusinessException {
+        return ResponseEntity.ok(categoryMasterService.loadCategory(dto));
+    }
+
+    @PostMapping("categoryDropdown")
+    public ResponseEntity<?> getCategoryDropDown(
+            @RequestBody CategoryRequest categoryRequest) throws Exception {
+        return ResponseEntity.ok(categoryMasterService.findAllCategory(categoryRequest));
     }
 }
