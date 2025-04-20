@@ -8,12 +8,16 @@ import com.ims.inventory.domen.response.FilterResponse;
 import com.ims.inventory.domen.response.MenuResponse;
 import com.ims.inventory.domen.response.Responce;
 import com.ims.inventory.service.ModuleService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin("*")
 @RestController
@@ -69,6 +73,18 @@ public class ModuleController {
     public ResponseEntity<FilterResponse> getDropDownOptions(@Valid @RequestBody DropDownRequest req)
             throws Exception {
         return ResponseEntity.ok().body(moduleService.getDropDownOptions(req));
+    }
+
+    @PostMapping("soft/delete")
+    public ResponseEntity<Responce> getSoftDelete(@Valid @RequestBody LoadRequest loadRequest)
+            throws Exception {
+        return ResponseEntity.ok().body(moduleService.softDelete(loadRequest));
+    }
+
+    @PostMapping(value = "export/csv", produces = "text/csv")
+    public void exportCsv(@RequestBody FilterRequest filterRequest,
+                          HttpServletRequest request, HttpServletResponse response) throws Exception {
+        moduleService.exportCsv(filterRequest, request, response);
     }
 
 }

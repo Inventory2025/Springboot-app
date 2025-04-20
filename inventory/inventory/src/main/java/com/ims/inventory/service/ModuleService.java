@@ -7,7 +7,11 @@ import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.response.FilterResponse;
 import com.ims.inventory.domen.response.MenuResponse;
 import com.ims.inventory.domen.response.Responce;
+import com.ims.inventory.exception.ImsBusinessException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ModuleService {
@@ -27,5 +31,10 @@ public interface ModuleService {
     List<MenuResponse> getModuleMenu() throws Exception;
 
     FilterResponse getDropDownOptions(DropDownRequest req) throws Exception;
+
+    Responce softDelete(LoadRequest loadRequest) throws Exception;
+
+    void exportCsv(FilterRequest filterRequest, HttpServletRequest request,
+                          HttpServletResponse response) throws Exception, IOException;
 
 }

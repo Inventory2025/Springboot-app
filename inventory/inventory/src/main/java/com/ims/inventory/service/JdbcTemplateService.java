@@ -24,6 +24,9 @@ public class JdbcTemplateService {
     @Autowired
     private NamedParameterJdbcTemplate namedParamJdbcTemplate;
 
+    public List<Map<String, Object>> getQueryResult(String query) {
+        return jdbcTemplate.queryForList(query);
+    }
     public FilterResponse getQueryResult(Integer pageNo, Integer pageSize, String query) {
         FilterResponse resp = new FilterResponse();
 

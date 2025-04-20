@@ -71,7 +71,7 @@ public class ProductController {
                 autoCompleteRequest.getSearch(), true));
     }
 
-    @PostMapping("load")
+    @PostMapping("load/edit")
     public ResponseEntity<?> getProductById(@Valid @RequestBody LoadRequest dto) throws ImsBusinessException {
         return ResponseEntity.ok(productMasterservice.loadProductMater(dto));
     }

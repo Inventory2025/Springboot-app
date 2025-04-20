@@ -2,23 +2,25 @@ package com.ims.inventory.service.impl;
 
 import com.ims.inventory.domen.entity.BMCompDetail;
 import com.ims.inventory.domen.entity.BMCompElements;
-import com.ims.inventory.domen.request.CreateRequest;
-import com.ims.inventory.domen.request.DropDownRequest;
-import com.ims.inventory.domen.request.FilterRequest;
-import com.ims.inventory.domen.request.LoadRequest;
+import com.ims.inventory.domen.request.*;
 import com.ims.inventory.domen.response.FilterResponse;
 import com.ims.inventory.domen.response.MenuResponse;
 import com.ims.inventory.domen.response.Responce;
+import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.exception.ResourceNotFoundException;
 import com.ims.inventory.helpers.ComponentHelper;
+import com.ims.inventory.helpers.CsvExportHelper;
 import com.ims.inventory.service.JdbcTemplateService;
 import com.ims.inventory.service.ModuleService;
 import com.ims.inventory.utility.JsonUtility;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,9 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Autowired
     private JdbcTemplateService jdbcTemplateService;
+
+    @Autowired
+    private CsvExportHelper csvExportHelper;
 
     private final String success = "success";
     private final String dataNotFound = "Data not found";
@@ -204,6 +209,51 @@ public class ModuleServiceImpl implements ModuleService {
         } catch (Exception e) {
             log.error("Exception occurs in getting loadModule.");
             throw e;
+        }
+    }
+
+    public Responce softDelete(LoadRequest loadRequest) throws Exception {
+        try {
+            if (loadRequest.getModule() != null) {
+                BMCompDetail bmCompDetail = componentHelper.getBMCompDetail(loadRequest.getModule());
+                String tableName = bmCompDetail.getTableName();
+                if (ObjectUtils.isNotEmpty(tableName)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("update").append(" ").append(tableName).append(" ");
+                    sb.append("set is_active = false where id = '").append(loadRequest.getRecordCode()).append("'");
+                    String updateQuery = sb.toString();
+                    log.info("ModuleServiceImpl :: softDelete :: Update query -->:"+updateQuery);
+                    int flag = jdbcTemplateService.execute(updateQuery);
+                    Responce resp = new Responce();
+                    resp.setCode(200L);
+                    resp.setMessage("Delete successfully.");
+                    resp.setResult(loadRequest.getRecordCode());
+                    return resp;
+                } else {
+                    throw new Exception("Input model table not found.");
+                }
+            } else {
+                throw new Exception("Input data is null.");
+            }
+        } catch (Exception e) {
+            log.error("Exception occurs in softDelete.");
+            throw e;
+        }
+    }
+
+    @Override
+    public void exportCsv(FilterRequest filterRequest, HttpServletRequest request,
+                          HttpServletResponse response) throws Exception, IOException {
+        if (filterRequest != null && filterRequest.getModule() != null) {
+            BMCompDetail bmCompDetail = componentHelper.getBMCompDetail(filterRequest.getModule());
+            if (bmCompDetail != null && !ObjectUtils.isEmpty(bmCompDetail.getSelectQuery())) {
+                List<Map<String, Object>> list = jdbcTemplateService.getQueryResult(bmCompDetail.getSelectQuery());
+                csvExportHelper.exportCsv(list, response);
+            } else {
+                throw new Exception("Select Query Data Not Found");
+            }
+        } else {
+            throw new Exception("Input data is null.");
         }
     }
 }
