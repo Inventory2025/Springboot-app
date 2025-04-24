@@ -1,12 +1,16 @@
 package com.ims.inventory.controller;
 
 import com.ims.inventory.domen.request.AutoCompleteRequest;
+import com.ims.inventory.domen.request.CustomerRequest;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.SupplierRequest;
 import com.ims.inventory.domen.response.SupplierResponse;
 import com.ims.inventory.service.impl.SupplierServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +23,25 @@ public class SupplierController {
 
     private final SupplierServiceImpl supplierService;
 
-    @PostMapping("create")
-    public ResponseEntity<SupplierResponse> create(@RequestBody @Valid SupplierRequest dto) {
-        return ResponseEntity.ok(supplierService.create(dto));
+    @PostMapping("add")
+    public ResponseEntity<?> addSupplier(
+            @Valid @RequestBody SupplierRequest dto) throws Exception {
+        try {
+            return ResponseEntity.ok(supplierService.create(dto));
+        } catch (BadCredentialsException e) {
+            throw new Exception("SupplierController::addSupplier:Exception occurred while supplier creation.", e);
+        }
+
+    }
+
+    @PostMapping("edit")
+    public ResponseEntity<?> editSupplier(
+            @Valid @RequestBody SupplierRequest dto) throws Exception {
+        try {
+            return ResponseEntity.ok(supplierService.editSupplier(dto));
+        } catch (BadCredentialsException e) {
+            throw new Exception("SupplierController::editSupplier:Exception occurred while Supplier edition.", e);
+        }
     }
 
     @GetMapping
@@ -51,5 +71,15 @@ public class SupplierController {
             @RequestBody AutoCompleteRequest autoCompleteRequest) throws Exception {
         return ResponseEntity.ok(supplierService.findAllSupplierByNameIsActive(
                 autoCompleteRequest.getSearch(), true));
+    }
+
+    @PostMapping("loadSupplier")
+    public ResponseEntity<?> loadSupplier(
+            @Valid @RequestBody LoadRequest loadRequest, HttpServletRequest request) throws Exception {
+        try {
+            return ResponseEntity.ok(supplierService.loadSupplier(loadRequest, request));
+        } catch (BadCredentialsException e) {
+            throw new Exception("RoleController::addRole:Exception occurred while role edition.", e);
+        }
     }
 }

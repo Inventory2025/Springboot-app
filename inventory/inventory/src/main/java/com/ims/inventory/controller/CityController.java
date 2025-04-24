@@ -1,9 +1,6 @@
 package com.ims.inventory.controller;
 
-import com.ims.inventory.domen.request.CityRequest;
-import com.ims.inventory.domen.request.CountryRequest;
-import com.ims.inventory.domen.request.LoadRequest;
-import com.ims.inventory.domen.request.RemoveRequest;
+import com.ims.inventory.domen.request.*;
 import com.ims.inventory.service.impl.CityMasterService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -61,5 +58,11 @@ public class CityController {
         } catch (BadCredentialsException e) {
             throw new Exception("RoleController::addRole:Exception occurred while role edition.", e);
         }
+    }
+
+    @PostMapping("cityDropdown")
+    public ResponseEntity<?> getCityDropDown(
+            @RequestBody CityRequest cityRequest) throws Exception {
+        return ResponseEntity.ok(cityMasterService.findAllCity(cityRequest));
     }
 }

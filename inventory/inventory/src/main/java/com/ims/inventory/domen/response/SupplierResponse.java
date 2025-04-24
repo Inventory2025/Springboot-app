@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SupplierResponse {
+public class SupplierResponse extends BaseResponse{
     private Long id;
     private String supplierName;
     private String email;

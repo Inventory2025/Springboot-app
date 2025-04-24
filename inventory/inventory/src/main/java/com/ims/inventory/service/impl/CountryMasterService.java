@@ -1,5 +1,6 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.CountryDropDownDto;
 import com.ims.inventory.domen.request.CountryRequest;
 import com.ims.inventory.domen.request.CustomerRequest;
 import com.ims.inventory.domen.request.LoadRequest;
@@ -21,4 +22,6 @@ public interface CountryMasterService {
     CountryResponse CountryDelete(RemoveRequest removeRequest) throws Exception;
 
     public CountryResponse load(LoadRequest loadRequest, HttpServletRequest request) throws ImsBusinessException;
+
+    public List<CountryDropDownDto> findAllCountry(CountryRequest countryRequest) throws ImsBusinessException;
 }

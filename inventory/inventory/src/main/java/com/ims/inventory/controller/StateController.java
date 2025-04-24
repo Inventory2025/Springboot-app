@@ -61,4 +61,10 @@ public class StateController {
             throw new Exception("RoleController::addRole:Exception occurred while role edition.", e);
         }
     }
+
+    @PostMapping("stateDropdown")
+    public ResponseEntity<?> getstateDropDown(
+            @RequestBody StateRequest stateRequest) throws Exception {
+        return ResponseEntity.ok(stateMasterService.findAllState(stateRequest));
+    }
 }

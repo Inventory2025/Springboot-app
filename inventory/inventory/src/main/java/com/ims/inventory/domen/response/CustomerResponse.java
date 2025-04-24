@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomerResponse {
+public class CustomerResponse  extends BaseResponse{
     private Long id;
     private String customerName;
     private String email;

@@ -1,13 +1,12 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.CityDto;
+import com.ims.inventory.domen.dto.CountryDropDownDto;
 import com.ims.inventory.domen.entity.City;
 import com.ims.inventory.domen.entity.Country;
 import com.ims.inventory.domen.entity.CustomerMaster;
 import com.ims.inventory.domen.entity.RoleMaster;
-import com.ims.inventory.domen.request.CountryRequest;
-import com.ims.inventory.domen.request.CustomerRequest;
-import com.ims.inventory.domen.request.LoadRequest;
-import com.ims.inventory.domen.request.RemoveRequest;
+import com.ims.inventory.domen.request.*;
 import com.ims.inventory.domen.response.CityResponse;
 import com.ims.inventory.domen.response.CountryResponse;
 import com.ims.inventory.domen.response.CustomerResponse;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ims.inventory.constants.ErrorCode.*;
 import static com.ims.inventory.constants.ErrorMsg.*;
@@ -136,5 +136,18 @@ public class CountryMasterServiceImpl implements CountryMasterService{
         country.setCode(country.getCode());
         country.setName(country.getName());
 
+    }
+
+    public List<CountryDropDownDto> findAllCountry(CountryRequest countryRequest) throws ImsBusinessException {
+        List<Country> countryMasterList = countryRepository.findAllIsacitve(true);
+
+        if (!ObjectUtils.isEmpty(countryMasterList)) {
+            return countryMasterList.stream()
+                    .map(country -> new CountryDropDownDto(country.getId(), country.getName(), country.getCode()))
+                    .collect(Collectors.toList());
+        } else {
+            log.info("countryMasterServiceImpl::findAllCountry:: active country not found.");
+            throw new ImsBusinessException("CUST001", "Roles not found.");
+        }
     }
 }

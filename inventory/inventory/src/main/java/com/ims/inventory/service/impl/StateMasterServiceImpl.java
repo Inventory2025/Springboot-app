@@ -1,5 +1,7 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.CityDto;
+import com.ims.inventory.domen.dto.StateDropDowmDto;
 import com.ims.inventory.domen.entity.City;
 import com.ims.inventory.domen.entity.State;
 import com.ims.inventory.domen.request.CityRequest;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ims.inventory.constants.ErrorCode.*;
 import static com.ims.inventory.constants.ErrorMsg.*;
@@ -133,5 +136,18 @@ public class StateMasterServiceImpl implements StateMasterService{
         log.info("StateMasterService::StateMapper:State mapper called.");
         state.setCode(state.getCode());
         state.setName(state.getName());
+    }
+
+    public List<StateDropDowmDto> findAllState(StateRequest stateRequest) throws ImsBusinessException {
+        List<State> stateMasterList = stateRepository.findAllIsacitve(true);
+
+        if (!ObjectUtils.isEmpty(stateMasterList)) {
+            return stateMasterList.stream()
+                    .map(state -> new StateDropDowmDto(state.getId(), state.getName(), state.getCode()))
+                    .collect(Collectors.toList());
+        } else {
+            log.info("StateMasterServiceImpl::findAllState:: active state not found.");
+            throw new ImsBusinessException("CUST001", "Roles not found.");
+        }
     }
 }

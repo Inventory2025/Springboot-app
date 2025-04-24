@@ -1,14 +1,15 @@
 package com.ims.inventory.service.impl;
 
-import com.ims.inventory.domen.entity.CustomerMaster;
-import com.ims.inventory.domen.entity.SupplierMaster;
+import com.ims.inventory.domen.entity.*;
 import com.ims.inventory.domen.request.CustomerRequest;
+import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.SupplierRequest;
 import com.ims.inventory.domen.response.AutoCompleteResponse;
 import com.ims.inventory.domen.response.CustomerResponse;
 import com.ims.inventory.domen.response.SupplierResponse;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.repository.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -16,6 +17,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.ims.inventory.constants.ErrorCode.*;
+import static com.ims.inventory.constants.ErrorMsg.BRANCH_EDIT_EXCEPTION_MSG;
+import static com.ims.inventory.constants.ErrorMsg.BRANCH_NOT_FOUND_MSG;
+import static com.ims.inventory.constants.ImsConstants.SUCCESS;
 
 @Slf4j
 @Service
@@ -31,18 +38,14 @@ public class SupplierServiceImpl {
         log.info("SupplierServiceImpl::create:: Supplier insert method call.");
         SupplierMaster supplier = new SupplierMaster();
 
-        supplier.setSupplierName(dto.getSupplierName());
+        supplier.setSupplierName(dto.getName());
         supplier.setEmail(dto.getEmail());
         supplier.setPhoneNumber(dto.getPhoneNumber());
-        supplier.setAddressLine1(dto.getAddressLine1());
-        supplier.setAddressLine2(dto.getAddressLine2());
-        supplier.setAddressLine3(dto.getAddressLine3());
-        supplier.setPinCode(dto.getPinCode());
         supplier.setActive(true);
 
-        supplier.setCity(cityRepository.findByCode(dto.getCity()).orElse(null));
-        supplier.setState(stateRepository.findByCode(dto.getState()).orElse(null));
-        supplier.setCountry(countryRepository.findByCode(dto.getCountry()).orElse(null));
+        supplier.setCity(cityRepository.findById(dto.getCityId()).orElse(null));
+        supplier.setState(stateRepository.findById(dto.getStateId()).orElse(null));
+        supplier.setCountry(countryRepository.findById(dto.getCountryId()).orElse(null));
 
         supplierRepository.save(supplier);
         return mapToDto(supplier);
@@ -65,18 +68,14 @@ public class SupplierServiceImpl {
         SupplierMaster supplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Supplier not found"));
 
-        supplier.setSupplierName(dto.getSupplierName());
+        supplier.setSupplierName(dto.getName());
         supplier.setEmail(dto.getEmail());
         supplier.setPhoneNumber(dto.getPhoneNumber());
-        supplier.setAddressLine1(dto.getAddressLine1());
-        supplier.setAddressLine2(dto.getAddressLine2());
-        supplier.setAddressLine3(dto.getAddressLine3());
-        supplier.setPinCode(dto.getPinCode());
         supplier.setActive(true);
 
-        supplier.setCity(cityRepository.findByCode(dto.getCity()).orElse(null));
-        supplier.setState(stateRepository.findByCode(dto.getState()).orElse(null));
-        supplier.setCountry(countryRepository.findByCode(dto.getCountry()).orElse(null));
+        supplier.setCity(cityRepository.findByCode(dto.getCityId()).orElse(null));
+        supplier.setState(stateRepository.findByCode(dto.getStateId()).orElse(null));
+        supplier.setCountry(countryRepository.findByCode(dto.getCountryId()).orElse(null));
 
         return mapToDto(supplierRepository.save(supplier));
     }
@@ -132,4 +131,81 @@ public class SupplierServiceImpl {
             throw new ImsBusinessException("CUSTOO1", "Customer not found.");
         }
     }
+
+    public SupplierResponse editSupplier( SupplierRequest dto) throws Exception {
+        log.info("SupplierMasterService::Edit branch request :{}", dto);
+        try {
+            SupplierMaster supplierMaster = loadSupplierByName(dto.getName());
+            supplierMapper(supplierMaster, dto);
+            supplierMaster = supplierRepository.save(supplierMaster);
+            log.info("customerService::addCustomer:Customer edit successfully.");
+            return createResponse(supplierMaster, "Edit");
+        } catch (Exception e) {
+            log.error("SupplierMasterService::editsupplier::Exception occurred in edit Supplier for name :{}",
+                    dto.getName(), e);
+            throw new ImsBusinessException(BRANCH_EDIT_EXCEPTION_CODE, BRANCH_EDIT_EXCEPTION_MSG);
+        }
+    }
+
+    private void supplierMapper(SupplierMaster supplierMaster, SupplierRequest dto) {
+        supplierMaster.setSupplierName(dto.getName());
+        supplierMaster.setPhoneNumber(dto.getPhoneNumber());
+        supplierMaster.setEmail(dto.getEmail());
+        supplierMaster.setCity(cityRepository.findById(dto.getCityId()).orElse(null));
+        supplierMaster.setCountry(countryRepository.findById(dto.getCountryId()).orElse(null));
+        supplierMaster.setState(stateRepository.findById(dto.getStateId()).orElse(null));
+    }
+
+    private SupplierMaster loadSupplierByName(String name) throws ImsBusinessException {
+        log.info("SupplierMasterService::loadSupplierByName:Load customer called.");
+        Optional<SupplierMaster> supplierMasterObj = supplierRepository.findBySupplierName(name);
+        if (supplierMasterObj.isPresent() && ObjectUtils.isNotEmpty(supplierMasterObj.get())) {
+            log.info("SupplierMasterService::loadCustomerByName:customer found.");
+            return supplierMasterObj.get();
+        } else {
+            throw new ImsBusinessException(BRANCH_NOT_FOUND_CODE, BRANCH_NOT_FOUND_MSG);
+        }
+    }
+
+    private SupplierResponse createResponse(SupplierMaster supplierMaster, String method) throws ImsBusinessException {
+        if (ObjectUtils.isNotEmpty(supplierMaster)) {
+            SupplierResponse resp = new SupplierResponse();
+            resp.setSupplierName(supplierMaster.getSupplierName());
+            resp.setStatus(SUCCESS);
+            resp.setMessage("supplier " + method + "successfully.");
+            return resp;
+        } else {
+            throw new ImsBusinessException(USER_NOT_FOUND_CODE,
+                    "supplier not " + method + "successfully.");
+        }
+    }
+
+    public SupplierRequest loadSupplier(LoadRequest loadRequest, HttpServletRequest request) throws ImsBusinessException {
+        SupplierMaster supplierTran = supplierRepository.findByIdAndIsActive(loadRequest.getRecordCode(), true);
+        if (ObjectUtils.isNotEmpty(supplierTran)) {
+            return mapperDto(supplierTran);
+        } else {
+            throw new ImsBusinessException("Sale01", "Sale not found for id :"+loadRequest.getRecordCode());
+        }
+    }
+
+    private SupplierRequest mapperDto(SupplierMaster supplierTran) {
+        SupplierRequest supplier = new SupplierRequest();
+        supplier.setName(supplierTran.getSupplierName());
+        supplier.setPhoneNumber(supplierTran.getPhoneNumber());
+        supplier.setEmail(supplierTran.getEmail());
+
+        City cityMaster = cityRepository.findByIdAndIsActive(supplierTran.getCity().getId(), true);
+        supplier.setCityId(cityMaster.getId());
+
+        State stateMaster = stateRepository.findByIdAndIsActive(supplierTran.getState().getId(), true);
+        supplier.setStateId(stateMaster.getId());
+
+        Country CountryMaster = countryRepository.findByIdAndIsActive(supplierTran.getCountry().getId(), true);
+        supplier.setCountryId(CountryMaster.getId());
+
+        return supplier;
+    }
+
+
 }

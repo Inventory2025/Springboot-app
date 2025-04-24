@@ -1,5 +1,6 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.StateDropDowmDto;
 import com.ims.inventory.domen.request.CityRequest;
 import com.ims.inventory.domen.request.LoadRequest;
 import com.ims.inventory.domen.request.RemoveRequest;
@@ -23,5 +24,7 @@ public interface StateMasterService {
     public StateResponse stateDelete(RemoveRequest removeRequest, HttpServletRequest request) throws Exception;
 
     public StateResponse load(LoadRequest loadRequest, HttpServletRequest request) throws ImsBusinessException;
+
+    public List<StateDropDowmDto> findAllState(StateRequest stateRequest) throws ImsBusinessException;
 
 }

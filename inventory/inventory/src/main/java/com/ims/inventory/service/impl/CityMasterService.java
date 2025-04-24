@@ -1,5 +1,6 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.CityDto;
 import com.ims.inventory.domen.entity.City;
 import com.ims.inventory.domen.request.CityRequest;
 import com.ims.inventory.domen.request.CountryRequest;
@@ -22,4 +23,6 @@ public interface CityMasterService {
     CityResponse CityDelete(RemoveRequest removeRequest, HttpServletRequest request) throws Exception;
 
     public CityResponse load(LoadRequest loadRequest, HttpServletRequest request) throws ImsBusinessException;
+
+    public List<CityDto> findAllCity(CityRequest cityRequest) throws ImsBusinessException;
 }

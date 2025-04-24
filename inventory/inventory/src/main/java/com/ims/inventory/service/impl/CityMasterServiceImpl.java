@@ -1,11 +1,11 @@
 package com.ims.inventory.service.impl;
 
+import com.ims.inventory.domen.dto.CityDto;
+import com.ims.inventory.domen.dto.UnitDropDownDto;
 import com.ims.inventory.domen.entity.City;
 import com.ims.inventory.domen.entity.Country;
-import com.ims.inventory.domen.request.CityRequest;
-import com.ims.inventory.domen.request.CountryRequest;
-import com.ims.inventory.domen.request.LoadRequest;
-import com.ims.inventory.domen.request.RemoveRequest;
+import com.ims.inventory.domen.entity.UnitMaster;
+import com.ims.inventory.domen.request.*;
 import com.ims.inventory.domen.response.CityResponse;
 import com.ims.inventory.domen.response.CountryResponse;
 import com.ims.inventory.exception.ImsBusinessException;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ims.inventory.constants.ErrorCode.*;
 import static com.ims.inventory.constants.ErrorMsg.*;
@@ -133,5 +134,18 @@ public class CityMasterServiceImpl implements CityMasterService{
         log.info("CityMasterService::CityMapper:City mapper called.");
         city.setCode(city.getCode());
         city.setName(city.getName());
+    }
+
+    public List<CityDto> findAllCity(CityRequest cityRequest) throws ImsBusinessException {
+        List<City> cityMasterList = cityRepository.findAllIsacitve(true);
+
+        if (!ObjectUtils.isEmpty(cityMasterList)) {
+            return cityMasterList.stream()
+                    .map(city -> new CityDto(city.getId(), city.getName(), city.getCode()))
+                    .collect(Collectors.toList());
+        } else {
+            log.info("CityMasterServiceImpl::findAllCity:: active city not found.");
+            throw new ImsBusinessException("CUST001", "Roles not found.");
+        }
     }
 }

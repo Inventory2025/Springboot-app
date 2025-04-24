@@ -1,14 +1,15 @@
 package com.ims.inventory.controller;
 
-import com.ims.inventory.domen.request.AutoCompleteRequest;
-import com.ims.inventory.domen.request.CustomerRequest;
+import com.ims.inventory.domen.request.*;
 import com.ims.inventory.domen.response.CustomerResponse;
 import com.ims.inventory.exception.ImportError;
 import com.ims.inventory.service.impl.CustomerServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,9 +25,25 @@ public class CustomerController {
 
     private final CustomerServiceImpl customerService;
 
-    @PostMapping
-    public ResponseEntity<CustomerResponse> create(@RequestBody @Valid CustomerRequest dto) {
-        return ResponseEntity.ok(customerService.create(dto));
+    @PostMapping("add")
+    public ResponseEntity<?> addCustomer(
+            @Valid @RequestBody CustomerRequest dto) throws Exception {
+        try {
+            return ResponseEntity.ok(customerService.create(dto));
+        } catch (BadCredentialsException e) {
+            throw new Exception("CustomerController::addRole:Exception occurred while role creation.", e);
+        }
+
+    }
+
+    @PostMapping("edit")
+    public ResponseEntity<?> editCutomer(
+            @Valid @RequestBody CustomerRequest dto) throws Exception {
+        try {
+            return ResponseEntity.ok(customerService.editCustomer(dto));
+        } catch (BadCredentialsException e) {
+            throw new Exception("CustomerController::editCutomer:Exception occurred while customer edition.", e);
+        }
     }
 
     @GetMapping
@@ -83,6 +100,16 @@ public class CustomerController {
             @RequestBody AutoCompleteRequest autoCompleteRequest) throws Exception {
         return ResponseEntity.ok(customerService.findAllCustomerByNameIsActive(
                 autoCompleteRequest.getSearch(), true));
+    }
+
+    @PostMapping("loadCustomer")
+    public ResponseEntity<?> loadCustomer(
+            @Valid @RequestBody LoadRequest loadRequest, HttpServletRequest request) throws Exception {
+        try {
+            return ResponseEntity.ok(customerService.loadCustomer(loadRequest, request));
+        } catch (BadCredentialsException e) {
+            throw new Exception("RoleController::addRole:Exception occurred while role edition.", e);
+        }
     }
 
 }

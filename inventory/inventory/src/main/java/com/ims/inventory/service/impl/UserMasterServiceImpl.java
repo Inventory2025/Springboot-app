@@ -160,9 +160,9 @@ public class UserMasterServiceImpl implements UserMasterService {
         user.setDescription(userTran.getDescription());
 //        user.setConfirmPassword(userTran.get);
         BranchMaster branchMaster = branchRepository.findByIdAndIsActive(userTran.getBranchMaster().getId(), true);
-        user.setBranchId(branchMaster.getName());
+        user.setBranchId(branchMaster.getId());
         RoleMaster roleMaster = roleRepository.findByIdAndIsActive(userTran.getRoleMaster().getId(), true);
-        user.setRoleId(roleMaster.getName());
+        user.setRoleId(roleMaster.getId());
         return user;
     }
 

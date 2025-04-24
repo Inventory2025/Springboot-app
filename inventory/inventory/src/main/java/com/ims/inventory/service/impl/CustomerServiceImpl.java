@@ -1,17 +1,22 @@
 package com.ims.inventory.service.impl;
 
 import com.ims.inventory.domen.dto.CustomerImportDto;
-import com.ims.inventory.domen.entity.CustomerMaster;
-import com.ims.inventory.domen.entity.ProductMaster;
+import com.ims.inventory.domen.entity.*;
+import com.ims.inventory.domen.request.BranchRequest;
 import com.ims.inventory.domen.request.CustomerRequest;
+import com.ims.inventory.domen.request.LoadRequest;
+import com.ims.inventory.domen.request.UserRequest;
 import com.ims.inventory.domen.response.AutoCompleteResponse;
+import com.ims.inventory.domen.response.BranchResponse;
 import com.ims.inventory.domen.response.CustomerResponse;
+import com.ims.inventory.domen.response.UserResponse;
 import com.ims.inventory.exception.ImportError;
 import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.repository.CityRepository;
 import com.ims.inventory.repository.CountryRepository;
 import com.ims.inventory.repository.CustomerRepository;
 import com.ims.inventory.repository.StateRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -30,7 +35,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
+import static com.ims.inventory.constants.ErrorCode.*;
+import static com.ims.inventory.constants.ErrorMsg.BRANCH_EDIT_EXCEPTION_MSG;
+import static com.ims.inventory.constants.ErrorMsg.BRANCH_NOT_FOUND_MSG;
+import static com.ims.inventory.constants.ImsConstants.SUCCESS;
 
 @Slf4j
 @Service
@@ -48,15 +59,11 @@ public class CustomerServiceImpl {
         customer.setCustomerName(dto.getCustomerName());
         customer.setEmail(dto.getEmail());
         customer.setPhoneNumber(dto.getPhoneNumber());
-        customer.setAddressLine1(dto.getAddressLine1());
-        customer.setAddressLine2(dto.getAddressLine2());
-        customer.setAddressLine3(dto.getAddressLine3());
-        customer.setPinCode(dto.getPinCode());
         customer.setActive(true);
 
-        customer.setCity(cityRepository.findByCode(dto.getCity()).orElse(null));
-        customer.setState(stateRepository.findByCode(dto.getState()).orElse(null));
-        customer.setCountry(countryRepository.findByCode(dto.getCountry()).orElse(null));
+        customer.setCity(cityRepository.findById(dto.getCityId()).orElse(null));
+        customer.setState(stateRepository.findById(dto.getStateId()).orElse(null));
+        customer.setCountry(countryRepository.findById(dto.getCountryId()).orElse(null));
 
         customerRepository.save(customer);
         return mapToDto(customer);
@@ -81,15 +88,11 @@ public class CustomerServiceImpl {
         customer.setCustomerName(dto.getCustomerName());
         customer.setEmail(dto.getEmail());
         customer.setPhoneNumber(dto.getPhoneNumber());
-        customer.setAddressLine1(dto.getAddressLine1());
-        customer.setAddressLine2(dto.getAddressLine2());
-        customer.setAddressLine3(dto.getAddressLine3());
-        customer.setPinCode(dto.getPinCode());
         customer.setActive(true);
 
-        customer.setCity(cityRepository.findByCode(dto.getCity()).orElse(null));
-        customer.setState(stateRepository.findByCode(dto.getState()).orElse(null));
-        customer.setCountry(countryRepository.findByCode(dto.getCountry()).orElse(null));
+        customer.setCity(cityRepository.findById(dto.getCityId()).orElse(null));
+        customer.setState(stateRepository.findByCode(dto.getStateId()).orElse(null));
+        customer.setCountry(countryRepository.findByCode(dto.getCountryId()).orElse(null));
 
         return mapToDto(customerRepository.save(customer));
     }
@@ -235,4 +238,79 @@ public class CustomerServiceImpl {
         }
     }
 
+    public CustomerRequest loadCustomer(LoadRequest loadRequest, HttpServletRequest request) throws ImsBusinessException {
+        CustomerMaster customerTran = customerRepository.findByIdAndIsActive(loadRequest.getRecordCode(), true);
+        if (ObjectUtils.isNotEmpty(customerTran)) {
+            return mapperDto(customerTran);
+        } else {
+            throw new ImsBusinessException("Sale01", "Sale not found for id :"+loadRequest.getRecordCode());
+        }
+    }
+
+    private CustomerRequest mapperDto(CustomerMaster customerTran) {
+        CustomerRequest customer = new CustomerRequest();
+        customer.setCustomerName(customerTran.getCustomerName());
+        customer.setPhoneNumber(customerTran.getPhoneNumber());
+        customer.setEmail(customerTran.getEmail());
+
+        City cityMaster = cityRepository.findByIdAndIsActive(customerTran.getCity().getId(), true);
+        customer.setCityId(cityMaster.getId());
+
+        State stateMaster = stateRepository.findByIdAndIsActive(customerTran.getState().getId(), true);
+        customer.setStateId(stateMaster.getId());
+
+        Country CountryMaster = countryRepository.findByIdAndIsActive(customerTran.getCountry().getId(), true);
+        customer.setCountryId(CountryMaster.getId());
+
+        return customer;
+    }
+
+
+    public CustomerResponse editCustomer( CustomerRequest dto) throws Exception {
+        log.info("BranchMasterService::Edit branch request :{}", dto);
+        try {
+            CustomerMaster cutomerMaster = loadCustomerByName(dto.getCustomerName());
+            customerMapper(cutomerMaster, dto);
+            cutomerMaster = customerRepository.save(cutomerMaster);
+            log.info("customerService::addCustomer:Customer edit successfully.");
+            return createResponse(cutomerMaster, "Edit");
+        } catch (Exception e) {
+            log.error("BranchMasterService::editBranch::Exception occurred in edit Branch for name :{}",
+                    dto.getCustomerName(), e);
+            throw new ImsBusinessException(BRANCH_EDIT_EXCEPTION_CODE, BRANCH_EDIT_EXCEPTION_MSG);
+        }
+    }
+
+    private CustomerMaster loadCustomerByName(String customerName) throws ImsBusinessException {
+        log.info("CustomerMasterService::loadCustomerByName:Load customer called.");
+        Optional<CustomerMaster> customerMasterObj = customerRepository.findByCustomerName(customerName);
+        if (customerMasterObj.isPresent() && ObjectUtils.isNotEmpty(customerMasterObj.get())) {
+            log.info("CustomerMasterService::loadCustomerByName:customer found.");
+            return customerMasterObj.get();
+        } else {
+            throw new ImsBusinessException(BRANCH_NOT_FOUND_CODE, BRANCH_NOT_FOUND_MSG);
+        }
+    }
+
+    private void customerMapper(CustomerMaster customerMaster, CustomerRequest dto) {
+        customerMaster.setCustomerName(dto.getCustomerName());
+        customerMaster.setPhoneNumber(dto.getPhoneNumber());
+        customerMaster.setEmail(dto.getEmail());
+        customerMaster.setCity(cityRepository.findById(dto.getCityId()).orElse(null));
+        customerMaster.setCountry(countryRepository.findById(dto.getCountryId()).orElse(null));
+        customerMaster.setState(stateRepository.findById(dto.getStateId()).orElse(null));
+    }
+
+    private CustomerResponse createResponse(CustomerMaster customerMaster, String method) throws ImsBusinessException {
+        if (ObjectUtils.isNotEmpty(customerMaster)) {
+            CustomerResponse resp = new CustomerResponse();
+            resp.setCustomerName(customerMaster.getCustomerName());
+            resp.setStatus(SUCCESS);
+            resp.setMessage("User " + method + "successfully.");
+            return resp;
+        } else {
+            throw new ImsBusinessException(USER_NOT_FOUND_CODE,
+                    "User not " + method + "successfully.");
+        }
+    }
 }

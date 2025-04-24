@@ -60,4 +60,10 @@ public class CountryController {
         }
     }
 
+    @PostMapping("countryDropdown")
+    public ResponseEntity<?> getCountryDropDown(
+            @RequestBody CountryRequest countryRequest) throws Exception {
+        return ResponseEntity.ok(countryMasterService.findAllCountry(countryRequest));
+    }
+
 }
