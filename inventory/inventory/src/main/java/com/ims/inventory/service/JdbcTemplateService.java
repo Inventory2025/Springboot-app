@@ -91,4 +91,28 @@ public class JdbcTemplateService {
         return namedParamJdbcTemplate.update(insertQuery, parameterSource);
     }
 
+    public int executeCountQuery(String query) {
+        return jdbcTemplate.queryForObject(query, Integer.class);
+    }
+
+    public FilterResponse getQueryResultWithFilter(Integer pageNo, Integer pageSize,
+                                                   String query, String countQuery) {
+        FilterResponse resp = new FilterResponse();
+
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(query);
+
+        int totalRecord = executeCountQuery(countQuery);
+        int totalPages = (int) Math.ceil((double) totalRecord / (pageSize > 0 ? pageSize : 1));
+        Page page = new Page(
+                pageSize,
+                pageNo,
+                totalRecord,
+                totalPages > 0 ? totalPages : 1
+        );
+        resp.setResultList(list);
+        resp.setPage(page);
+        System.out.println(list);
+        return resp;
+    }
+
 }

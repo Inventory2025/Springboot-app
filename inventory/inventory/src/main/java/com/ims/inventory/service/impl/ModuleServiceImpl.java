@@ -18,10 +18,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +50,10 @@ public class ModuleServiceImpl implements ModuleService {
            // String selectQuery = componentHelper.getSelectQueryByBMCompCode(filterRequest.getModule());
             BMCompDetail bmCompDetail = componentHelper.getBMCompDetail(filterRequest.getModule());
             if (bmCompDetail != null && !ObjectUtils.isEmpty(bmCompDetail.getSelectQuery())) {
-                FilterResponse filterResponse = jdbcTemplateService.getQueryResult(filterRequest.getPageNo()
-                        , filterRequest.getPageSize(), bmCompDetail.getSelectQuery());
+               /* FilterResponse filterResponse = jdbcTemplateService.getQueryResult(filterRequest.getPageNo()
+                        , filterRequest.getPageSize(), bmCompDetail.getSelectQuery());*/
+
+                FilterResponse filterResponse = buildFilterQuery(filterRequest, bmCompDetail.getSelectQuery());
                 filterResponse.setLabel(bmCompDetail.getBmComponent().getLabel());
                 filterResponse.setSubModuleLink(bmCompDetail.getBmComponent().getSbcLink());
                 return filterResponse;
@@ -58,6 +63,70 @@ public class ModuleServiceImpl implements ModuleService {
         } else {
             throw new Exception("Input data is null.");
         }
+    }
+
+    private FilterResponse buildFilterQuery(FilterRequest filterRequest, String selectQuery) throws Exception {
+
+        if (!ObjectUtils.isEmpty(selectQuery)) {
+            StringBuffer sql = new StringBuffer();
+            StringBuffer countSql = new StringBuffer();
+            countSql.append("select count(1) from ( ").append(selectQuery).append(" ) as t");
+            sql.append("select * from ( ").append(selectQuery).append(" ) as t");
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            if (ObjectUtils.isNotEmpty(filterRequest.getFilters())) {
+
+                int i = 0;
+                for (Filter condition : filterRequest.getFilters()) {
+                    String paramKey = "param" + i++;
+                    sql.append(" AND ").append(condition.getColumn()).append(" ");
+
+                    switch (condition.getOperator().toUpperCase()) {
+                        case "=":
+                        case "!=":
+                        case ">":
+                        case "<":
+                        case ">=":
+                        case "<=":
+                            sql.append(condition.getOperator()).append(" :").append(paramKey);
+                            params.addValue(paramKey, condition.getValue());
+                            break;
+
+                        case "LIKE":
+                            sql.append("LIKE :").append(paramKey);
+                            params.addValue(paramKey, "%" + condition.getValue() + "%");
+                            break;
+
+                        case "IN":
+                            if (StringUtils.isNotEmpty(condition.getValue())) {
+                                sql.append("IN (:").append(paramKey).append(")");
+                                params.addValue(paramKey, condition.getValue().split(","));
+                            }
+                            break;
+                    }
+                }
+            }
+
+            // Add sorting
+            if (ObjectUtils.isNotEmpty(filterRequest.getSortBy())
+                    && StringUtils.isNotEmpty(filterRequest.getSortBy().getSortBy())) {
+                String direction = ("DESC".equalsIgnoreCase(filterRequest.getSortBy().getDirection())) ? "DESC" : "ASC";
+                sql.append(" ORDER BY ").append(filterRequest.getSortBy().getSortBy()).append(" ").append(direction);
+            }
+
+            // Add pagination
+            sql.append(" LIMIT ").append(filterRequest.getPageSize());
+            sql.append(" OFFSET ").append(((filterRequest.getPageNo()-1) * filterRequest.getPageSize()));
+           // params.addValue("limit", filterRequest.getPageSize());
+           // params.addValue("offset", (filterRequest.getPageNo()-1) * filterRequest.getPageSize());
+
+            FilterResponse filterResponse = jdbcTemplateService.getQueryResultWithFilter(filterRequest.getPageNo()
+                    , filterRequest.getPageSize(), sql.toString(), countSql.toString());
+
+            return filterResponse;
+
+
+        }
+        throw new ResourceNotFoundException("Select query is null/Empty for this module :"+filterRequest.getModule());
     }
 
     public Responce createModule(CreateRequest createRequest) throws Exception {
