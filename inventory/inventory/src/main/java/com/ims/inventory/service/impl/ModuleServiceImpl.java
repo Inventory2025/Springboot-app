@@ -44,6 +44,7 @@ public class ModuleServiceImpl implements ModuleService {
 
     private final String success = "success";
     private final String dataNotFound = "Data not found";
+    private final String EMPTY_SPACE = " ";
 
     public FilterResponse filterlist(FilterRequest filterRequest) throws Exception {
         if (filterRequest != null && filterRequest.getModule() != null) {
@@ -70,41 +71,88 @@ public class ModuleServiceImpl implements ModuleService {
         if (!ObjectUtils.isEmpty(selectQuery)) {
             StringBuffer sql = new StringBuffer();
             StringBuffer countSql = new StringBuffer();
-            countSql.append("select count(1) from ( ").append(selectQuery).append(" ) as t");
             sql.append("select * from ( ").append(selectQuery).append(" ) as t");
             MapSqlParameterSource params = new MapSqlParameterSource();
             if (ObjectUtils.isNotEmpty(filterRequest.getFilters())) {
-
                 int i = 0;
-                for (Filter condition : filterRequest.getFilters()) {
-                    String paramKey = "param" + i++;
-                    sql.append(" AND ").append(condition.getColumn()).append(" ");
+                sql.append(" where ");
+                for (Filter filter : filterRequest.getFilters()) {
+                    if (filter.getValues() == null || filter.getValues().isEmpty()) continue;
 
-                    switch (condition.getOperator().toUpperCase()) {
+
+                    StringBuffer colCondSql = new StringBuffer();
+                    colCondSql.append(" ( ");
+                    switch (filter.getOperator().toUpperCase()) {
+
                         case "=":
-                        case "!=":
                         case ">":
                         case "<":
                         case ">=":
                         case "<=":
-                            sql.append(condition.getOperator()).append(" :").append(paramKey);
-                            params.addValue(paramKey, condition.getValue());
+                            if ("Boolean".equalsIgnoreCase(filter.getDataType())) {
+                                buildFilterValueCondForString(colCondSql, filter.getColumn(), "=",
+                                        filter.getCondition().toUpperCase(), filter.getValues(), true);
+                            } else if ("Date".equalsIgnoreCase(filter.getDataType())) {
+                                buildFilterValueCondForDate(colCondSql, filter.getColumn(), filter.getOperator().toUpperCase(),
+                                        filter.getCondition().toUpperCase(), filter.getValues());
+                            } else {
+                                buildFilterValueCond(colCondSql, filter.getColumn(), filter.getOperator().toUpperCase(),
+                                        filter.getCondition().toUpperCase(), filter.getValues());
+                            }
+
                             break;
 
-                        case "LIKE":
-                            sql.append("LIKE :").append(paramKey);
-                            params.addValue(paramKey, "%" + condition.getValue() + "%");
+                        case "EQUALS":
+                            if ("Date".equalsIgnoreCase(filter.getDataType())) {
+                                buildFilterValueCondForDate(colCondSql, filter.getColumn(), "=",
+                                        filter.getCondition().toUpperCase(), filter.getValues());
+                            } else {
+                                buildFilterValueCondForString(colCondSql, filter.getColumn(), "=",
+                                        filter.getCondition().toUpperCase(), filter.getValues(), false);
+                            }
+                            break;
+
+                        case "NOTEQUALS":
+                            if ("Date".equalsIgnoreCase(filter.getDataType())) {
+                                buildFilterValueCondForDate(colCondSql, filter.getColumn(), "!=",
+                                        filter.getCondition().toUpperCase(), filter.getValues());
+                            } else {
+                                buildFilterValueCondForString(colCondSql, filter.getColumn(), "!=",
+                                        filter.getCondition().toUpperCase(), filter.getValues(), false);
+                            }
+                            break;
+
+                        case "CONTAINS":
+                            buildFilterValueCondForLike(colCondSql, filter.getColumn(), filter.getOperator().toUpperCase(),
+                                    filter.getCondition().toUpperCase(), filter.getValues());
+                            break;
+
+                        case "STARTSWITH":
+                            buildFilterValueCondForStartWith(colCondSql, filter.getColumn(), filter.getOperator().toUpperCase(),
+                                    filter.getCondition().toUpperCase(), filter.getValues());
+                            break;
+
+                        case "ENDSWITH":
+                            buildFilterValueCondForEndWith(colCondSql, filter.getColumn(), filter.getOperator().toUpperCase(),
+                                    filter.getCondition().toUpperCase(), filter.getValues());
                             break;
 
                         case "IN":
-                            if (StringUtils.isNotEmpty(condition.getValue())) {
-                                sql.append("IN (:").append(paramKey).append(")");
-                                params.addValue(paramKey, condition.getValue().split(","));
-                            }
+                            buildFilterValueCondForIn(colCondSql, filter.getColumn(), filter.getOperator().toUpperCase(),
+                                    filter.getCondition().toUpperCase(), filter.getValues());
                             break;
                     }
+                    colCondSql.append(" ) ");
+
+                    if (i > 0) {
+                        sql.append(EMPTY_SPACE).append("AND").append(EMPTY_SPACE);
+                    }
+                    sql.append(colCondSql);
+                    i++;
                 }
             }
+
+            countSql.append("select count(1) from ( ").append(sql).append(" ) as t");
 
             // Add sorting
             if (ObjectUtils.isNotEmpty(filterRequest.getSortBy())
@@ -116,8 +164,6 @@ public class ModuleServiceImpl implements ModuleService {
             // Add pagination
             sql.append(" LIMIT ").append(filterRequest.getPageSize());
             sql.append(" OFFSET ").append(((filterRequest.getPageNo()-1) * filterRequest.getPageSize()));
-           // params.addValue("limit", filterRequest.getPageSize());
-           // params.addValue("offset", (filterRequest.getPageNo()-1) * filterRequest.getPageSize());
 
             FilterResponse filterResponse = jdbcTemplateService.getQueryResultWithFilter(filterRequest.getPageNo()
                     , filterRequest.getPageSize(), sql.toString(), countSql.toString());
@@ -128,6 +174,115 @@ public class ModuleServiceImpl implements ModuleService {
         }
         throw new ResourceNotFoundException("Select query is null/Empty for this module :"+filterRequest.getModule());
     }
+
+
+
+    private void buildFilterValueCond(StringBuffer colCondSql, String column, String filterOperator,
+                                      String valueOperator, List<FilterValue> values) {
+        int index = 0;
+        for (FilterValue value : values) {
+            colCondSql.append("(").append(column).append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
+                    .append(value.getValue().trim()).append(")");
+            if (index > 0) {
+                colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
+            }
+            index++;
+        }
+    }
+
+    private void buildFilterValueCondForDate(StringBuffer colCondSql, String column, String filterOperator,
+                                      String valueOperator, List<FilterValue> values) {
+        int index = 0;
+        for (FilterValue value : values) {
+            colCondSql.append("(").append(column).append("::date").append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
+                    .append("'").append(value.getValue().trim()).append("'").append(")");
+            if (index > 0) {
+                colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
+            }
+            index++;
+        }
+    }
+
+    private void buildFilterValueCondForString(StringBuffer colCondSql, String column, String filterOperator,
+                                      String valueOperator, List<FilterValue> values, Boolean isBoolean) {
+        int index = 0;
+        for (FilterValue value : values) {
+            String valueStr = value.getValue().toUpperCase();
+            colCondSql.append("(").append("upper(").append(column).append(")")
+                    .append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
+                    .append("'").append(valueStr.trim()).append("'").append(")");
+            if (index > 0) {
+                colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
+            }
+            index++;
+        }
+    }
+
+    private void buildFilterValueCondForIn(StringBuffer colCondSql, String column, String filterOperator,
+                                      String valueOperator, List<FilterValue> values) {
+        colCondSql.append("upper(").append(column).append(")").append(EMPTY_SPACE).append("IN").append(EMPTY_SPACE)
+                .append("(");
+        int index = 0;
+        for (FilterValue value : values) {
+            if (index > 0) {
+                colCondSql.append(EMPTY_SPACE).append(", ");
+            }
+            colCondSql.append("'").append(value.getValue().trim().toUpperCase()).append("'");
+            index++;
+        }
+        colCondSql.append(")");
+    }
+
+    private void buildFilterValueCondForLike(StringBuffer colCondSql, String column, String filterOperator,
+                                           String valueOperator, List<FilterValue> values) {
+        int index = 0;
+        if (StringUtils.isNotEmpty(valueOperator)) {
+            for (FilterValue value : values) {
+                colCondSql.append("(").append("upper(").append(column).append(")")
+                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
+                        .append("'%").append(value.getValue().trim().toUpperCase()).append("%'").append(")");
+                if (index > 0) {
+                    colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
+                }
+                index++;
+            }
+        }
+    }
+
+    private void buildFilterValueCondForStartWith(StringBuffer colCondSql, String column, String filterOperator,
+                                             String valueOperator, List<FilterValue> values) {
+        int index = 0;
+        if (StringUtils.isNotEmpty(valueOperator)) {
+            for (FilterValue value : values) {
+                colCondSql.append("(").append("upper(").append(column).append(")")
+                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
+                        .append("'").append(value.getValue().trim().toUpperCase()).append("%'").append(")");
+                if (index > 0) {
+                    colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
+                }
+                index++;
+            }
+        }
+    }
+
+    private void buildFilterValueCondForEndWith(StringBuffer colCondSql, String column, String filterOperator,
+                                                  String valueOperator, List<FilterValue> values) {
+        int index = 0;
+        if (StringUtils.isNotEmpty(valueOperator)) {
+            for (FilterValue value : values) {
+                colCondSql.append("(").append("upper(").append(column).append(")")
+                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
+                        .append("'%").append(value.getValue().trim().toUpperCase()).append("'").append(")");
+                if (index > 0) {
+                    colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
+                }
+                index++;
+            }
+        }
+    }
+
+
+
 
     public Responce createModule(CreateRequest createRequest) throws Exception {
         if (createRequest != null && createRequest.getModule() != null) {

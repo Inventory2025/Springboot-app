@@ -5,6 +5,7 @@ import com.ims.inventory.domen.entity.BMCompElements;
 import com.ims.inventory.domen.entity.BMComponent;
 import com.ims.inventory.domen.response.FilterResponse;
 import com.ims.inventory.domen.response.MenuResponse;
+import com.ims.inventory.exception.ImsBusinessException;
 import com.ims.inventory.repository.BMCompDetailRepository;
 import com.ims.inventory.repository.BMCompElementRepository;
 import com.ims.inventory.repository.BMComponentRepository;
@@ -13,6 +14,7 @@ import com.ims.inventory.service.JdbcTemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,13 +102,58 @@ public class ComponentHelper {
         if (compCode != null && !compCode.isEmpty()) {
             BMCompDetail bmCompDetail = bmCompDetailRepository.findByCompCode(compCode);
             if (bmCompDetail != null && ObjectUtils.isNotEmpty(bmCompDetail.getDesign())) {
-                return bmCompDetail.getDesign();
+                return buildTableDesign(bmCompDetail.getDesign());
             } else {
                 throw new Exception("Component detail not found or null");
             }
         } else {
             throw new Exception("Input data is null.");
         }
+    }
+
+    public String buildTableDesign(String designStr) throws ImsBusinessException {
+        try {
+            JSONArray result = new JSONArray();
+            JSONArray tableDesign = new JSONArray(designStr);
+            for (int i = 0; i < tableDesign.length(); i++) {
+                JSONObject obj = tableDesign.getJSONObject(i);
+                String dataType = obj.optString("dataType", "String");
+                obj.put("dataType",  dataType);
+                obj.put("operators", getOperatorsByDataType(dataType));
+                result.put(obj);
+            }
+            return result.toString();
+        } catch (Exception e) {
+            throw new ImsBusinessException("ER001", "Error while creating table design.");
+        }
+    }
+
+    public JSONArray getOperatorsByDataType(String dataType) {
+        JSONArray operators = new JSONArray();
+        switch (dataType) {
+            case "String" :
+                operators.put(new JSONObject().put("value", "equals"));
+                operators.put(new JSONObject().put("value", "notEquals"));
+                operators.put(new JSONObject().put("value", "contains"));
+                operators.put(new JSONObject().put("value", "startsWith"));
+                operators.put(new JSONObject().put("value", "endsWith"));
+                break;
+            case "Number" :
+            case "Date" :
+                operators.put(new JSONObject().put("value", "equals"));
+                operators.put(new JSONObject().put("value", "notEquals"));
+                operators.put(new JSONObject().put("value", ">"));
+                operators.put(new JSONObject().put("value", "<"));
+                operators.put(new JSONObject().put("value", ">="));
+                operators.put(new JSONObject().put("value", "<="));
+                break;
+            case "Boolean" :
+                operators.put(new JSONObject().put("value", "="));
+                break;
+            default:
+                break;
+        }
+        return operators;
     }
 
     public String getDesignByBMCompCode(String compCode, String recordCode) throws Exception {

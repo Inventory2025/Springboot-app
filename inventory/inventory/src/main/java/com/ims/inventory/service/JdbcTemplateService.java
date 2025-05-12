@@ -97,6 +97,8 @@ public class JdbcTemplateService {
 
     public FilterResponse getQueryResultWithFilter(Integer pageNo, Integer pageSize,
                                                    String query, String countQuery) {
+        log.info("getQueryResultWithFilter()::Count Query Query--->{}",countQuery);
+        log.info("getQueryResultWithFilter()::Select Query--->{}",query);
         FilterResponse resp = new FilterResponse();
 
         List<Map<String, Object>> list = jdbcTemplate.queryForList(query);

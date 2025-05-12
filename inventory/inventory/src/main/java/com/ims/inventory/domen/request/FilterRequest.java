@@ -13,8 +13,8 @@ public class FilterRequest {
     private Integer pageNo;
     private Integer pageSize;
     private SortBy sortBy;
-    private String Module;
+    private String module;
     private Object data;
 
-    private List<Filter> Filters;
+    private List<Filter> filters;
 }

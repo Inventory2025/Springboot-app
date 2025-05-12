@@ -30,7 +30,7 @@ public class PageableJdbcRepositoryImpl implements PageableJdbcRepository {
         Map<String, Object> params = new HashMap<>();
         if (!ObjectUtils.isEmpty(filters)) {
             for (Filter filter : filters) {
-                if (!ObjectUtils.isEmpty(filter.getColumn())) {
+                /*if (!ObjectUtils.isEmpty(filter.getColumn())) {
                     condition.append(!condition.isEmpty() ? " AND " : "");
                     condition.append(" LOWER(").append(filter.getAlies()).append(".").append(filter.getColumn()).append(") ");
                     condition.append(filter.getOperator()).append(" :").append(filter.getColumn());
@@ -41,7 +41,7 @@ public class PageableJdbcRepositoryImpl implements PageableJdbcRepository {
                         orders.append(filter.getAlies()).append(".").append(filter.getColumn())
                                 .append(" ").append(filter.getOrder());
                     }
-                }
+                }*/
             }
         }
 
