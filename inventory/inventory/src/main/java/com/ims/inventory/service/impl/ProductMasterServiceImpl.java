@@ -119,7 +119,7 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
                 Optional<ProductStock> productStock = productStockRepository.findById(productMaster.getId());
                 if (productStock.isPresent()) {
                     Integer pStock = productStock.get().getStock();
-                    productResp.setStock((pStock > 0 ? pStock : 0));
+                    productResp.setStock((ObjectUtils.isNotEmpty(pStock) && pStock > 0 ? pStock : 0));
                 }
                 return productResp;
             } else {
@@ -172,6 +172,14 @@ public class ProductMasterServiceImpl implements ProductMasterservice{
         productMaster.setProductUnit(unitRepository.findById(productRequest.getUnitId()).orElse(null));
         productMaster.setPurchaseUnit(unitRepository.findById(productRequest.getUnitId()).orElse(null));
         productMaster.setQuantity(productRequest.getQuantity());
+
+        productMaster.setDescription(productRequest.getName());
+        productMaster.setCost(productRequest.getPrice());
+        productMaster.setDiscount(BigDecimal.valueOf(5));
+        productMaster.setStockAlert(BigDecimal.valueOf(5));
+        productMaster.setTaxPer(BigDecimal.valueOf(18));
+        productMaster.setTaxType("Inclusive");
+        productMaster.setStatus("true");
     }
 
 

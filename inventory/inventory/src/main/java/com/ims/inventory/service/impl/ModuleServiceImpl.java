@@ -181,11 +181,12 @@ public class ModuleServiceImpl implements ModuleService {
                                       String valueOperator, List<FilterValue> values) {
         int index = 0;
         for (FilterValue value : values) {
-            colCondSql.append("(").append(column).append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
-                    .append(value.getValue().trim()).append(")");
             if (index > 0) {
                 colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
             }
+            colCondSql.append("(").append(column).append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
+                    .append(value.getValue().trim()).append(")");
+
             index++;
         }
     }
@@ -194,11 +195,12 @@ public class ModuleServiceImpl implements ModuleService {
                                       String valueOperator, List<FilterValue> values) {
         int index = 0;
         for (FilterValue value : values) {
-            colCondSql.append("(").append(column).append("::date").append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
-                    .append("'").append(value.getValue().trim()).append("'").append(")");
             if (index > 0) {
                 colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
             }
+            colCondSql.append("(").append(column).append("::date").append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
+                    .append("'").append(value.getValue().trim()).append("'").append(")");
+
             index++;
         }
     }
@@ -208,12 +210,13 @@ public class ModuleServiceImpl implements ModuleService {
         int index = 0;
         for (FilterValue value : values) {
             String valueStr = value.getValue().toUpperCase();
-            colCondSql.append("(").append("upper(").append(column).append(")")
-                    .append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
-                    .append("'").append(valueStr.trim()).append("'").append(")");
             if (index > 0) {
                 colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
             }
+            colCondSql.append("(").append("upper(").append(column).append(")")
+                    .append(EMPTY_SPACE).append(filterOperator).append(EMPTY_SPACE)
+                    .append("'").append(valueStr.trim()).append("'").append(")");
+
             index++;
         }
     }
@@ -238,12 +241,13 @@ public class ModuleServiceImpl implements ModuleService {
         int index = 0;
         if (StringUtils.isNotEmpty(valueOperator)) {
             for (FilterValue value : values) {
-                colCondSql.append("(").append("upper(").append(column).append(")")
-                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
-                        .append("'%").append(value.getValue().trim().toUpperCase()).append("%'").append(")");
                 if (index > 0) {
                     colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
                 }
+                colCondSql.append("(").append("upper(").append(column).append(")")
+                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
+                        .append("'%").append(value.getValue().trim().toUpperCase()).append("%'").append(")");
+
                 index++;
             }
         }
@@ -254,12 +258,13 @@ public class ModuleServiceImpl implements ModuleService {
         int index = 0;
         if (StringUtils.isNotEmpty(valueOperator)) {
             for (FilterValue value : values) {
-                colCondSql.append("(").append("upper(").append(column).append(")")
-                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
-                        .append("'").append(value.getValue().trim().toUpperCase()).append("%'").append(")");
                 if (index > 0) {
                     colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
                 }
+                colCondSql.append("(").append("upper(").append(column).append(")")
+                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
+                        .append("'").append(value.getValue().trim().toUpperCase()).append("%'").append(")");
+
                 index++;
             }
         }
@@ -270,12 +275,13 @@ public class ModuleServiceImpl implements ModuleService {
         int index = 0;
         if (StringUtils.isNotEmpty(valueOperator)) {
             for (FilterValue value : values) {
-                colCondSql.append("(").append("upper(").append(column).append(")")
-                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
-                        .append("'%").append(value.getValue().trim().toUpperCase()).append("'").append(")");
                 if (index > 0) {
                     colCondSql.append(EMPTY_SPACE).append(valueOperator).append(EMPTY_SPACE);
                 }
+                colCondSql.append("(").append("upper(").append(column).append(")")
+                        .append(EMPTY_SPACE).append("LIKE").append(EMPTY_SPACE)
+                        .append("'%").append(value.getValue().trim().toUpperCase()).append("'").append(")");
+
                 index++;
             }
         }
